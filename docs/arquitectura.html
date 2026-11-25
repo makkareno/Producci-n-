@@ -45,7 +45,8 @@ nav.top .wrap{display:flex;gap:6px;align-items:center;overflow-x:auto;padding-bl
 nav.top .wrap::-webkit-scrollbar{display:none}
 nav.top a{flex:none;text-decoration:none;color:var(--muted);font-size:.85rem;font-weight:500;padding:6px 10px;border-radius:6px;white-space:nowrap}
 nav.top a:hover{background:var(--sunk);color:var(--ink)}
-nav.top .brand{font-family:var(--f-mono);color:var(--ink);font-weight:500;margin-right:6px}
+nav.top .brand{font-family:var(--f-mono);color:var(--ink);font-weight:500;margin-right:6px;flex:none;white-space:nowrap}
+section,.dept{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
 /* hero / claqueta */
 header.hero{padding-block:40px 28px}
@@ -116,6 +117,28 @@ section{padding-block:40px;border-top:1px solid var(--line)}
 .pill-list{display:flex;flex-wrap:wrap;gap:6px}
 .pill{font-size:.8rem;background:var(--surface);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
 .dept-body > div:first-child .pill{background:var(--sunk)}
+
+/* roles */
+.roles{padding:16px 20px;border-bottom:1px solid var(--line);display:grid;gap:10px}
+.role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.role{border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:8px;align-content:start;background:var(--bg);min-width:0}
+.role-h{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:flex-start}
+.role-h b{font-size:.96rem;line-height:1.3}
+.role-h .bs{display:flex;gap:4px;flex-wrap:wrap}
+.badge.lead{background:var(--ink);color:var(--bg)}
+.badge.opt{border:1px dashed var(--muted);color:var(--muted)}
+.role .sum{font-size:.88rem;color:var(--muted)}
+.role ul{margin:0;padding-left:18px;font-size:.88rem}
+.role li{margin:2px 0}
+.role dl{margin:0;display:grid;gap:3px;padding-top:8px;border-top:1px solid var(--line);font-size:.8rem}
+.role dl div{display:grid;grid-template-columns:86px minmax(0,1fr);gap:6px}
+.role dt{color:var(--muted)}
+.role dd{margin:0}
+.tbd{font-family:var(--f-mono);font-size:.74rem;color:var(--muted);border:1px dashed var(--muted);border-radius:4px;padding:0 6px;justify-self:start}
+.org-node .rc{font-family:var(--f-mono);font-size:.68rem;color:var(--muted)}
+.cat td.what{min-width:220px}
+.cat td{font-size:.86rem}
+.cat .rn{font-weight:600;white-space:nowrap}
 
 /* matriz */
 .scroll-x{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
@@ -198,6 +221,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     <a href="#capas">Capas</a>
     <a href="#organigrama">Organigrama</a>
     <a href="#departamentos">Departamentos</a>
+    <a href="#roles">Roles</a>
     <a href="#matriz">Matriz × fases</a>
     <a href="#flujo">Flujo y puertas</a>
     <a href="#modulos">Sistema de gestión</a>
@@ -212,7 +236,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     <div class="slate" aria-label="Datos del documento">
       <div class="stripes"></div>
       <div class="cell"><span>Producción</span><b>Podcast [nombre por definir]</b></div>
-      <div class="cell"><span>Documento</span><b>Arquitectura v0.2</b></div>
+      <div class="cell"><span>Documento</span><b>Arquitectura v0.3</b></div>
       <div class="cell"><span>Fecha</span><b>2026-11-25</b></div>
       <div class="cell"><span>Estado</span><b class="rec">● Para aprobación</b></div>
     </div>
@@ -221,6 +245,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     <div class="stats">
       <div><b>6</b><span>áreas</span></div>
       <div><b>11</b><span>departamentos</span></div>
+      <div><b>26</b><span>roles</span></div>
       <div><b>7</b><span>fases</span></div>
       <div><b>49</b><span>tareas por episodio</span></div>
       <div><b>7</b><span>puertas de aprobación</span></div>
@@ -237,7 +262,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
       <p>La organización dice quién; el proceso dice qué y cuándo; el sistema guarda todo y avisa; la gobernanza decide y corrige.</p>
     </div>
     <div class="layers">
-      <div class="layer"><span class="n">Capa 1</span><h3>Organización</h3><p>6 áreas y 11 departamentos con misión, roles, necesidades, entregables y métricas propias.</p></div>
+      <div class="layer"><span class="n">Capa 1</span><h3>Organización</h3><p>6 áreas, 11 departamentos y 26 roles, cada uno con tareas, necesidades, entregables y métricas.</p></div>
       <div class="layer"><span class="n">Capa 2</span><h3>Proceso</h3><p>7 fases y 49 tareas por episodio, con fechas calculadas desde el día de grabación (G) y de publicación (P).</p></div>
       <div class="layer"><span class="n">Capa 3</span><h3>Sistema de gestión</h3><p>14 módulos conectados: episodios, tareas, personas, invitados, presupuesto, inventario, métricas y más.</p></div>
       <div class="layer"><span class="n">Capa 4</span><h3>Gobernanza</h3><p>7 puertas de aprobación, reuniones fijas, indicadores por departamento y revisión del proceso.</p></div>
@@ -261,9 +286,20 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     <div class="sec-head">
       <span class="eyebrow">Capa 1 · Desglose</span>
       <h2>Departamentos: qué hacen y qué necesitan</h2>
-      <p>Cada ficha tiene misión, roles, tareas por fase, necesidades (personas, equipo, software, espacio y presupuesto), entregables, indicadores y con quién se coordina. En equipos pequeños una persona cubre varios departamentos (ver <a href="#escala">Escala</a>).</p>
+      <p>Cada ficha abre con sus roles: quién hace qué, a quién reporta y cuánto tiempo dedica. Después vienen las tareas por fase, necesidades (personas, equipo, software, espacio y presupuesto), entregables, indicadores y con quién se coordina. En equipos pequeños una persona cubre varios departamentos (ver <a href="#escala">Escala</a>).</p>
     </div>
     <div id="depts"></div>
+  </div>
+</section>
+
+<section id="roles">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 1 · Personas</span>
+      <h2>Catálogo de roles</h2>
+      <p>Los 26 roles en una sola tabla. Un rol es un conjunto de responsabilidades, no una persona: una misma persona puede cubrir varios roles. Cada departamento tiene un rol marcado como responsable. La columna "Asignado a" se llena cuando definamos al equipo.</p>
+    </div>
+    <div class="scroll-x"><table class="cat" id="cat"></table></div>
   </div>
 </section>
 
@@ -389,6 +425,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     </div>
     <div class="approve">
       <div class="q"><div><b>Áreas y departamentos.</b><p>¿Te sirven las 6 áreas y los 11 departamentos? ¿Quieres fusionar, quitar o agregar alguno? Por ejemplo, Comercial puede salir si no vas a monetizar todavía.</p></div></div>
+      <div class="q"><div><b>Roles.</b><p>¿Los 26 roles y lo que hace cada uno te hacen sentido? ¿Ya tienes personas para alguno? Dime nombres y los asigno en "Asignado a".</p></div></div>
       <div class="q"><div><b>Publicación dentro de Marketing.</b><p>En la v0.1 publicar era tarea de Producción. Aquí la pasé a Distribución y Marketing, y Producción solo verifica. ¿De acuerdo?</p></div></div>
       <div class="q"><div><b>Flujo de 11 estados y 7 puertas.</b><p>¿Agregarías o quitarías alguna aprobación? Por ejemplo, que el invitado apruebe el corte antes de publicar.</p></div></div>
       <div class="q"><div><b>Módulos de la primera versión.</b><p>Propongo empezar con Episodios, Tareas, Personas, Invitados, Banco de temas, Calendario y Presupuesto. ¿Cambiarías alguno?</p></div></div>
@@ -399,7 +436,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
 </section>
 
 <footer>
-  <div class="wrap">Arquitectura v0.2 · Basada en el sistema v0.1 del repositorio (matriz, fases, anexos y plantillas). Después de tu visto bueno se actualizan MATRIZ.md, el CSV de tareas y la RACI con estos departamentos.</div>
+  <div class="wrap">Arquitectura v0.3 · Basada en el sistema v0.1 del repositorio (matriz, fases, anexos y plantillas). Después de tu visto bueno se actualizan MATRIZ.md, el CSV de tareas y la RACI con estos departamentos.</div>
 </footer>
 
 <script>
@@ -417,7 +454,6 @@ const PHN = {F0:"Desarrollo",F1:"Preproducción",F2:"Producción",F3:"Postproduc
 const DEPTS = [
  {code:"DIR", area:"dir", n:"Dirección y Producción Ejecutiva",
   m:"Define la visión del show, toma las decisiones finales y responde por el presupuesto, la calidad y los resultados.",
-  roles:["Productor/a ejecutivo/a (showrunner)"],
   t:{F0:"Aprueba el concepto, la biblia del show, las metas y el presupuesto de la temporada.",F1:"Aprueba temas e invitados (puerta 1).",F3:"Aprueba el corte final (puerta 4).",F6:"Revisa resultados mensuales y de temporada y decide ajustes."},
   need:{Personas:"1 persona, 4–6 h por semana",Software:"Tablero de dirección del sistema",Presupuesto:"Define y controla el presupuesto total"},
   ent:["Biblia del show aprobada","Plan y metas de temporada","Presupuesto aprobado","Registro de decisiones"],
@@ -426,7 +462,6 @@ const DEPTS = [
   mx:["L","P","I","P","I","I","P"]},
  {code:"EDIT", area:"cont", n:"Contenido y Editorial",
   m:"Decide qué se dice, cómo se dice y por qué le importa a la audiencia.",
-  roles:["Host(s) o conductores","Investigador/a","Guionista o editor/a de contenido"],
   t:{F0:"Define formato, segmentos, tono y el banco inicial de temas.",F1:"Propone temas, investiga, verifica datos, escribe la escaleta y prepara al host.",F2:"Conduce la conversación.",F3:"Hace el corte editorial y revisa el contenido (puerta 4).",F4:"Escribe títulos, descripción y notas del episodio.",F5:"Propone momentos para clips y sus textos.",F6:"Usa la retención para ajustar formato y temas."},
   need:{Personas:"Host + 1 investigador/a (3–6 h por episodio)",Software:"Documentos compartidos, banco de temas, acceso a fuentes",Presupuesto:"Suscripciones a medios y bases de datos"},
   ent:["Banco de temas","Dossier de investigación","Escaleta o guion","Títulos y notas del episodio"],
@@ -435,7 +470,6 @@ const DEPTS = [
   mx:["L","L","L","P","P","P","P"]},
  {code:"PROD", area:"prod", n:"Producción y Coordinación",
   m:"Hace que todo pase a tiempo. Es dueño del calendario, del proceso y del sistema de gestión.",
-  roles:["Productor/a (jefe/a de producción)","Asistente de producción","Booker de invitados"],
   t:{F0:"Configura el sistema, el calendario y las plantillas; coordina el episodio piloto.",F1:"Contacta y confirma invitados, gestiona autorizaciones, reserva estudio y equipo, envía la hoja de llamado (puerta 2).",F2:"Coordina el set, recibe al invitado, lleva la bitácora y verifica el respaldo (puerta 3).",F3:"Coordina revisiones y hace el control de calidad (puerta 5).",F4:"Verifica que el episodio quedó publicado y funciona en cada plataforma.",F6:"Mide los tiempos reales de cada fase y ajusta el proceso."},
   need:{Personas:"1 productor/a; + 1 asistente si hay video cada semana",Equipo:"Teléfono y laptop de producción",Software:"Sistema de gestión, calendario compartido, firma electrónica, mensajería",Presupuesto:"Logística: transporte de invitados, alimentos en set, imprevistos"},
   ent:["Calendario de producción","Hoja de llamado","Bitácora de grabación","Control de calidad firmado","Ficha de episodio al día"],
@@ -444,7 +478,6 @@ const DEPTS = [
   mx:["P","L","L","P","P","I","P"]},
  {code:"SON", area:"prod", n:"Audio",
   m:"Garantiza que cada voz se escuche limpia y que nunca se pierda una grabación.",
-  roles:["Ingeniero/a o técnico/a de sonido"],
   t:{F0:"Diseña la cadena de audio y el tratamiento acústico del set.",F1:"Revisa el equipo y hace la prueba técnica con invitados remotos.",F2:"Monta micrófonos, fija niveles, graba cada voz en su pista con respaldo y escucha todo el tiempo.",F3:"Resuelve dudas técnicas sobre los brutos."},
   need:{Personas:"1 técnico/a por sesión",Equipo:"Micrófonos dinámicos, brazos, interfaz o grabadora multipista, grabadora de respaldo, audífonos, cables, paneles acústicos",Software:"Plataforma de grabación remota (Riverside, Zencastr)",Espacio:"Sala con tratamiento acústico"},
   ent:["Pistas WAV 48 kHz / 24 bit por persona","Respaldo de audio","Reporte de incidencias"],
@@ -453,7 +486,6 @@ const DEPTS = [
   mx:["P","P","L","I","","",""]},
  {code:"VID", area:"prod", n:"Video y Realización", opt:"Solo si hay video",
   m:"Diseña cómo se ve el show y graba cada ángulo listo para editar.",
-  roles:["Realizador/a o director/a de cámaras","Camarógrafo/a","Iluminador/a"],
   t:{F0:"Diseña el set, los planos de cámara y la iluminación; hace la prueba de cámara.",F1:"Revisa equipo, carga baterías y formatea tarjetas.",F2:"Monta cámaras y luces; graba cada cámara por separado, extras y foto fija.",F3:"Resuelve dudas sobre el material."},
   need:{Personas:"1–2 por sesión según el número de cámaras",Equipo:"2–3 cámaras, lentes, trípodes, 3–4 luces, tarjetas y baterías; switcher en nivel estudio",Espacio:"Set con escenografía y control de luz",Presupuesto:"Mantenimiento y renta de equipo"},
   ent:["Brutos por cámara","Fotos del episodio","Video vertical grabado en set"],
@@ -462,7 +494,6 @@ const DEPTS = [
   mx:["P","P","L","I","","",""]},
  {code:"POST", area:"post", n:"Postproducción",
   m:"Convierte los brutos en el episodio final y en todas sus piezas derivadas.",
-  roles:["Editor/a de audio","Editor/a de video","Coordinador/a de post (equipos grandes)"],
   t:{F0:"Crea plantillas de proyecto, la cadena de audio y los ajustes de exportación.",F2:"Recibe y organiza los brutos.",F3:"Sincroniza, transcribe, corta, limpia, mezcla, masteriza a −16 LUFS, edita video, subtítulos y clips.",F4:"Exporta los archivos de cada plataforma y los capítulos.",F5:"Produce clips verticales adicionales."},
   need:{Personas:"1 editor/a de audio + 1 de video (8–15 h por episodio con video)",Equipo:"Computadora de edición (32 GB RAM o más, buena GPU), monitores y audífonos de referencia, discos SSD o NAS",Software:"DAW, Premiere o Resolve, iZotope RX, Descript, Auphonic, plataforma de revisión",Presupuesto:"Licencias de software y almacenamiento en nube"},
   ent:["Máster WAV y MP3","Video 16:9","Clips 9:16","Subtítulos SRT","Transcripción","Capítulos"],
@@ -471,7 +502,6 @@ const DEPTS = [
   mx:["P","I","P","L","P","P",""]},
  {code:"DIS", area:"post", n:"Diseño y Marca",
   m:"Crea y cuida la identidad visual en cada pieza del show.",
-  roles:["Diseñador/a gráfico/a","Motion designer (opcional)"],
   t:{F0:"Crea logo, portada del show, kit de marca y plantillas.",F1:"Prepara los gráficos que irán en pantalla.",F3:"Entrega nombres en pantalla y animaciones para el video.",F4:"Diseña la portada del episodio y la miniatura de YouTube.",F5:"Diseña piezas para redes y el kit del invitado."},
   need:{Personas:"1 diseñador/a (2–4 h por episodio)",Software:"Figma o Adobe, banco de imágenes, tipografías con licencia",Presupuesto:"Sesión de fotos del host, licencias"},
   ent:["Kit de marca","Portada 3000×3000","Miniatura 1280×720","Gráficos y plantillas"],
@@ -480,7 +510,6 @@ const DEPTS = [
   mx:["L","P","","P","P","P",""]},
  {code:"MKT", area:"aud", n:"Distribución y Marketing",
   m:"Lleva cada episodio a su audiencia y hace crecer la comunidad.",
-  roles:["Responsable de publicación","Community manager","Estratega de crecimiento"],
   t:{F0:"Abre cuentas y el feed; define la estrategia de lanzamiento y los canales.",F2:"Graba contenido detrás de cámaras.",F3:"Elige los clips junto con POST.",F4:"Sube y programa en el hosting y en YouTube, con metadatos y SEO (puerta 6).",F5:"Ejecuta el calendario de redes, la newsletter, la comunidad y el kit del invitado.",F6:"Analiza con DATA qué piezas funcionan."},
   need:{Personas:"1 community manager (3–6 h por episodio)",Software:"Hosting de podcast, YouTube Studio, programador de redes, herramienta de newsletter",Presupuesto:"Pauta pagada (opcional) y herramientas"},
   ent:["Episodio publicado en todas las plataformas","Calendario de redes","Kit del invitado","Newsletter"],
@@ -489,7 +518,6 @@ const DEPTS = [
   mx:["P","I","P","P","L","L","P"]},
  {code:"DATA", area:"aud", n:"Datos y Análisis", opt:"Puede vivir dentro de MKT",
   m:"Convierte las cifras de cada plataforma en decisiones.",
-  roles:["Analista"],
   t:{F0:"Define metas e indicadores con DIR y arma el tablero.",F5:"Vigila el rendimiento de los clips en las primeras 48 h.",F6:"Registra métricas a 7 y 30 días, analiza la retención y reporta (puerta 7)."},
   need:{Personas:"1–2 h por episodio",Software:"Accesos a estadísticas del hosting, Spotify, Apple, YouTube y redes; hoja o tablero"},
   ent:["Tablero de métricas","Reporte mensual","Cifras para el media kit"],
@@ -498,7 +526,6 @@ const DEPTS = [
   mx:["P","","","","I","P","L"]},
  {code:"COM", area:"aud", n:"Comercial y Alianzas", opt:"Solo si se monetiza",
   m:"Genera ingresos y alianzas sin perder la confianza de la audiencia.",
-  roles:["Ejecutivo/a comercial","Account manager"],
   t:{F0:"Define el modelo de ingresos, las tarifas y el media kit.",F1:"Integra las menciones de patrocinio en la escaleta.",F3:"Verifica que las menciones cumplan el contrato.",F4:"Asegura que el patrocinio se declare en audio y descripción.",F5:"Entrega al patrocinador las piezas acordadas.",F6:"Entrega reportes a patrocinadores y gestiona renovaciones."},
   need:{Personas:"Medio tiempo o por comisión",Software:"CRM de prospectos; plantillas de propuesta y contrato"},
   ent:["Media kit","Propuestas comerciales","Contratos","Reportes de campaña"],
@@ -507,7 +534,6 @@ const DEPTS = [
   mx:["P","P","I","P","P","P","P"]},
  {code:"ADM", area:"adm", n:"Administración, Finanzas y Legal",
   m:"Mantiene en orden el dinero, los contratos y los derechos.",
-  roles:["Administrador/a","Contador/a (externo)","Abogado/a (externo)"],
   t:{F0:"Arma el presupuesto, registra la marca, prepara plantillas legales y asegura el equipo.",F1:"Archiva las autorizaciones, contrata freelancers y paga reservas.",F2:"Lleva el control del inventario de equipo.",F3:"Archiva las licencias de la música usada.",F6:"Compara gasto real contra presupuesto; pagos y facturación."},
   need:{Personas:"2–4 h por semana + asesores externos",Software:"Control de presupuesto, firma electrónica, carpeta legal",Presupuesto:"Honorarios de contador y abogado, registro de marca, seguros"},
   ent:["Presupuesto y reporte de gastos","Autorizaciones y contratos archivados","Inventario de activos"],
@@ -515,6 +541,44 @@ const DEPTS = [
   rec:"Contratos de COM; pedidos de PROD", ent2:"Pagos, contratos y reportes a DIR",
   mx:["P","P","I","I","","","P"]}
 ];
+
+const ROLES = [
+ {d:"DIR", r:"Productor/a ejecutivo/a", lead:1, tipo:"Interno", rep:"Socios o cliente", ded:"4–6 h por semana", sum:"Dueño/a de la visión y de las decisiones finales.", does:["Aprueba concepto, temporada y presupuesto","Aprueba temas e invitados (P1)","Aprueba el corte final con el host (P4)","Cierra alianzas y acuerdos con plataformas junto con Comercial","Dirige la revisión de cada temporada"]},
+ {d:"EDIT", r:"Editor/a de contenido (guionista)", lead:1, tipo:"Interno", rep:"Productor/a ejecutivo/a", ded:"3–5 h por episodio", sum:"Diseña qué se dice y en qué orden.", does:["Escribe la escaleta con tiempos y las 3 preguntas imprescindibles","Coordina al investigador/a y aprueba el dossier","Dirige el corte editorial junto con Postproducción","Escribe títulos, descripción y notas del episodio","Elige los momentos candidatos a clip"]},
+ {d:"EDIT", r:"Host / conductor(a)", tipo:"Interno", rep:"Productor/a ejecutivo/a", ded:"Grabación + 2–3 h de preparación", sum:"La voz y la cara del show.", does:["Estudia el dossier y la escaleta antes de grabar","Conduce la conversación y graba intros, cierres y lecturas","Revisa y aprueba el corte editorial (P4)","Graba promos y participa en clips","Responde comentarios clave de la audiencia"]},
+ {d:"EDIT", r:"Investigador/a", tipo:"Interno o freelance", rep:"Editor/a de contenido", ded:"3–5 h por episodio", sum:"Llega con los datos correctos antes de grabar.", does:["Arma el dossier del tema y del invitado","Verifica cifras y datos con su fuente","Revisa entrevistas previas del invitado para no repetir preguntas","Propone temas nuevos al banco"]},
+ {d:"PROD", r:"Productor/a", lead:1, tipo:"Interno", rep:"Productor/a ejecutivo/a", ded:"Medio tiempo o tiempo completo", sum:"Hace que todo pase a tiempo y mantiene el sistema al día.", does:["Lleva el calendario y el sistema de gestión","Dirige la junta de producción semanal","Aprueba las puertas P2, P3 y P5","Hace el control de calidad final","Controla tiempos y gastos de producción"]},
+ {d:"PROD", r:"Booker de invitados", tipo:"Interno", rep:"Productor/a", ded:"2–4 h por episodio", sum:"Consigue y cuida a los invitados.", does:["Busca e invita a los invitados","Confirma fecha, hora y modalidad por escrito","Consigue la autorización firmada","Envía brief, recordatorio y agradecimiento","Mantiene al día el directorio de invitados"]},
+ {d:"PROD", r:"Asistente de producción", tipo:"Interno o freelance", rep:"Productor/a", ded:"Día de grabación + 2 h", sum:"Resuelve la logística del día de grabación.", does:["Reserva estudio, equipo y transporte","Prepara y envía la hoja de llamado","Recibe al invitado y atiende al talento en set","Lleva la bitácora durante la grabación","Hace la descarga y el respaldo con Audio y Video"]},
+ {d:"SON", r:"Ingeniero/a de sonido", lead:1, tipo:"Interno o freelance", rep:"Productor/a", ded:"Sesión + 1 h de montaje", sum:"Responde por la calidad del audio grabado.", does:["Diseña la cadena de audio y la acústica del set","Coloca micrófonos y fija niveles","Graba cada voz en su pista, con respaldo","Escucha con audífonos durante toda la sesión","Hace la prueba técnica con invitados remotos","Mantiene el equipo de audio"]},
+ {d:"VID", r:"Realizador/a", lead:1, tipo:"Interno o freelance", rep:"Productor/a", ded:"Sesión + 2 h de montaje", sum:"Decide cómo se ve el show.", does:["Diseña el set y los planos de cámara","Define encuadres y dirige al equipo de cámara","Hace el corte en vivo si hay switcher","Revisa el material antes de cerrar la sesión"]},
+ {d:"VID", r:"Camarógrafo/a", tipo:"Freelance", rep:"Realizador/a", ded:"Sesión + 2 h", sum:"Opera las cámaras.", does:["Configura resolución, fps y balance de blancos iguales en todas las cámaras","Cuida foco y exposición durante la grabación","Graba extras, foto fija y video vertical","Descarga tarjetas con el asistente"]},
+ {d:"VID", r:"Iluminador/a", tipo:"Freelance (a menudo el camarógrafo/a)", rep:"Realizador/a", ded:"Montaje + sesión", sum:"Hace que el set y las personas se vean bien.", does:["Diseña y monta las luces","Iguala la temperatura de color entre luces y cámaras","Cuida piel, sombras y fondo","Desmonta y guarda el equipo de luz"]},
+ {d:"POST", r:"Coordinador/a de postproducción", lead:1, opt:1, tipo:"Interno (equipos grandes)", rep:"Productor/a", ded:"2–3 h por episodio", sum:"Ordena el trabajo de edición y las versiones.", does:["Asigna episodios y fechas a los editores","Junta los cambios de cada revisión","Controla versiones y nombres de archivo","Avisa a Producción cuando algo se retrasa"]},
+ {d:"POST", r:"Editor/a de audio", tipo:"Interno o freelance", rep:"Coordinador/a de post o Productor/a", ded:"3–6 h por episodio", sum:"Deja el audio final listo para publicar.", does:["Organiza los brutos y genera la transcripción","Hace el corte editorial que indica Contenido","Limpia, mezcla y masteriza a −16 LUFS","Marca los capítulos","Exporta WAV y MP3"]},
+ {d:"POST", r:"Editor/a de video", tipo:"Interno o freelance", rep:"Coordinador/a de post o Productor/a", ded:"5–10 h por episodio", sum:"Arma el episodio en video.", does:["Sincroniza cámaras y audio","Edita sobre el audio final, con cambios de cámara","Corrige color e integra gráficos","Agrega subtítulos","Exporta el video 16:9"]},
+ {d:"POST", r:"Editor/a de clips", tipo:"Freelance (o el editor/a de video)", rep:"Coordinador/a de post o Productor/a", ded:"2–4 h por episodio", sum:"Convierte los mejores momentos en clips verticales.", does:["Corta 3–8 clips de los momentos elegidos","Reencuadra a 9:16 y pone subtítulos","Adapta duración y formato a cada red","Entrega los clips a Marketing"]},
+ {d:"DIS", r:"Diseñador/a gráfico/a", lead:1, tipo:"Interno o freelance", rep:"Productor/a ejecutivo/a", ded:"2–4 h por episodio", sum:"Cuida la identidad visual en cada pieza.", does:["Crea logo, portada del show y kit de marca","Diseña portada de episodio y miniatura de YouTube","Prepara los gráficos para pantalla","Diseña piezas de redes y del kit del invitado"]},
+ {d:"DIS", r:"Motion designer", opt:1, tipo:"Freelance", rep:"Diseñador/a gráfico/a", ded:"Por proyecto", sum:"Da movimiento a la marca.", does:["Anima la intro y los nombres en pantalla","Crea plantillas animadas para clips","Entrega los archivos a Postproducción"]},
+ {d:"MKT", r:"Estratega de crecimiento", lead:1, tipo:"Interno", rep:"Productor/a ejecutivo/a", ded:"3–5 h por semana", sum:"Decide cómo crece la audiencia.", does:["Define canales, metas y plan de lanzamiento","Busca colaboraciones con otros podcasts y creadores","Gestiona la pauta pagada","Propone pruebas según lo que dicen los datos"]},
+ {d:"MKT", r:"Responsable de publicación", tipo:"Interno", rep:"Estratega de crecimiento", ded:"1–2 h por episodio", sum:"Sube cada episodio y verifica que funcione.", does:["Sube el audio al hosting y el video a YouTube","Llena título, descripción, capítulos y SEO","Pone miniatura, subtítulos y playlist","Verifica la publicación en todas las plataformas (P6)"]},
+ {d:"MKT", r:"Community manager", tipo:"Interno o freelance", rep:"Estratega de crecimiento", ded:"3–6 h por episodio", sum:"Mueve el episodio en redes y cuida a la comunidad.", does:["Arma y publica el calendario de redes","Publica el teaser y los clips","Responde comentarios y mensajes","Envía el kit al invitado y la newsletter"]},
+ {d:"DATA", r:"Analista", lead:1, tipo:"Interno (puede ser el estratega)", rep:"Estratega de crecimiento", ded:"1–2 h por episodio", sum:"Convierte las cifras en decisiones.", does:["Arma y mantiene el tablero de métricas","Registra cifras a 7 y 30 días (P7)","Analiza en qué minuto se va la audiencia","Prepara el reporte mensual y las cifras del media kit"]},
+ {d:"COM", r:"Ejecutivo/a comercial", lead:1, tipo:"Medio tiempo o por comisión", rep:"Productor/a ejecutivo/a", ded:"Variable", sum:"Consigue patrocinios y alianzas.", does:["Busca marcas afines al show","Prepara media kit y propuestas","Negocia tarifas y condiciones","Cierra contratos junto con Administración"]},
+ {d:"COM", r:"Account manager", tipo:"Medio tiempo", rep:"Ejecutivo/a comercial", ded:"1–2 h por episodio patrocinado", sum:"Cumple lo prometido al patrocinador.", does:["Pasa a Contenido las menciones acordadas","Verifica que las menciones salgan como dice el contrato","Envía reportes de resultados al patrocinador","Gestiona renovaciones"]},
+ {d:"ADM", r:"Administrador/a", lead:1, tipo:"Interno", rep:"Productor/a ejecutivo/a", ded:"2–4 h por semana", sum:"Lleva el dinero, los papeles y el inventario.", does:["Arma y controla el presupuesto","Paga a proveedores y freelancers","Archiva autorizaciones, licencias y contratos","Lleva el inventario de equipo"]},
+ {d:"ADM", r:"Contador/a", tipo:"Externo", rep:"Administrador/a", ded:"Mensual", sum:"Mantiene en orden la contabilidad y los impuestos.", does:["Lleva la contabilidad mensual","Emite y revisa facturas","Presenta las declaraciones de impuestos"]},
+ {d:"ADM", r:"Abogado/a", tipo:"Externo", rep:"Administrador/a", ded:"Por consulta", sum:"Protege al show en lo legal.", does:["Redacta la autorización del invitado y los contratos tipo","Registra la marca","Revisa contratos de patrocinio y licencias"]}
+];
+const rolesOf = code => ROLES.filter(r => r.d === code);
+const nRoles = code => { const n = rolesOf(code).length; return n + (n === 1 ? " rol" : " roles"); };
+function roleCard(r){
+  return `<div class="role"><div class="role-h"><b>${esc(r.r)}</b><span class="bs">${r.lead ? `<span class="badge lead">Responsable</span>` : ""}${r.opt ? `<span class="badge opt">Opcional</span>` : ""}</span></div>
+    <p class="sum">${esc(r.sum)}</p>
+    <ul>${r.does.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    <dl><div><dt>Reporta a</dt><dd>${esc(r.rep)}</dd></div><div><dt>Dedicación</dt><dd>${esc(r.ded)}</dd></div><div><dt>Tipo</dt><dd>${esc(r.tipo)}</dd></div><div><dt>Asignado a</dt><dd><span class="tbd">Por definir</span></dd></div></dl>
+  </div>`;
+}
 
 const STATES = [
  {k:"E01",n:"Idea",d:"En el banco de temas",g:null},
@@ -563,11 +627,11 @@ const color = a => `var(${a.c})`;
 (function(){
   const org = document.getElementById("org");
   const dir = DEPTS.find(d => d.code === "DIR"), a1 = areaOf("dir");
-  let h = `<div class="org-top"><a class="org-node" href="#d-DIR" style="min-width:240px;border-color:${color(a1)}"><span class="code" style="color:${color(a1)}">DIR</span><span class="nm">${esc(dir.n)}</span></a></div><div class="org-line"></div><div class="org-areas">`;
+  let h = `<div class="org-top"><a class="org-node" href="#d-DIR" style="min-width:240px;border-color:${color(a1)}"><span class="code" style="color:${color(a1)}">DIR</span><span class="nm">${esc(dir.n)}</span><span class="rc">${nRoles("DIR")}</span></a></div><div class="org-line"></div><div class="org-areas">`;
   AREAS.filter(a => a.id !== "dir").forEach(a => {
     h += `<div class="org-area"><div class="ah" style="color:${color(a)}">${esc(a.n)}</div>`;
     DEPTS.filter(d => d.area === a.id).forEach(d => {
-      h += `<a class="org-node" href="#d-${d.code}"><span class="code" style="color:${color(a)}">${d.code}</span><span class="nm">${esc(d.n)}</span></a>`;
+      h += `<a class="org-node" href="#d-${d.code}"><span class="code" style="color:${color(a)}">${d.code}</span><span class="nm">${esc(d.n)}</span><span class="rc">${nRoles(d.code)}</span></a>`;
     });
     h += `</div>`;
   });
@@ -588,10 +652,10 @@ const color = a => `var(${a.c})`;
           <div class="t"><h3>${esc(d.n)}</h3><p>${esc(d.m)}</p></div>
           ${d.opt ? `<span class="tag-opt">${esc(d.opt)}</span>` : ""}
         </div>
+        <div class="roles"><h4>Roles: quién hace qué</h4><div class="role-grid">${rolesOf(d.code).map(roleCard).join("")}</div></div>
         <div class="dept-body">
           <div>
-            <div class="blk"><h4>Roles</h4><div class="pill-list">${d.roles.map(r => `<span class="pill">${esc(r)}</span>`).join("")}</div></div>
-            <div class="blk"><h4>Tareas por fase</h4><div class="phase-list">${phases}</div></div>
+            <div class="blk"><h4>Tareas del departamento por fase</h4><div class="phase-list">${phases}</div></div>
             <div class="blk"><h4>Entregables</h4><ul>${d.ent.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
           </div>
           <div>
@@ -634,4 +698,16 @@ const color = a => `var(${a.c})`;
 // Módulos
 document.getElementById("mods").innerHTML = MODS.map(m =>
   `<div class="mod${m.core ? " core" : ""}"><div class="mod-h"><b>${esc(m.n)}</b><span class="badge ${m.v === 1 ? "mvp" : "f2"}">${m.v === 1 ? "V1" : "Etapa 2"}</span></div><p>${esc(m.d)}</p><div class="rel"><b>Se conecta con:</b> ${esc(m.r)}</div></div>`).join("");
+
+// Catálogo de roles
+(function(){
+  let h = `<thead><tr><th>Rol</th><th>Depto.</th><th>Qué hace</th><th>Reporta a</th><th>Tipo</th><th>Dedicación</th><th>Asignado a</th></tr></thead><tbody>`;
+  DEPTS.forEach(d => {
+    const a = areaOf(d.area);
+    rolesOf(d.code).forEach(r => {
+      h += `<tr><td class="rn">${esc(r.r)}${r.lead ? ` <span class="badge lead">Resp.</span>` : ""}</td><td><span class="chip" style="background:${color(a)}">${d.code}</span></td><td class="what">${esc(r.sum)}</td><td>${esc(r.rep)}</td><td>${esc(r.tipo)}</td><td>${esc(r.ded)}</td><td><span class="tbd">Por definir</span></td></tr>`;
+    });
+  });
+  document.getElementById("cat").innerHTML = h + `</tbody>`;
+})();
 </script>
