@@ -8,7 +8,7 @@
 :root{
   --bg:#F3F5F8; --surface:#FFFFFF; --sunk:#E9EDF2; --ink:#17202B; --muted:#566173; --line:#D7DDE5;
   --accent:#2A55C9; --rec:#C9362A;
-  --a1:#5B47C2; --a2:#B9480E; --a3:#0E7466; --a4:#A9237A; --a5:#1F68C7; --a6:#5E6878;
+  --a1:#5B47C2; --a2:#9A6200; --a3:#0E7466; --a4:#A9237A; --a5:#1F68C7; --a6:#5E6878;
   --on-solid:#FFFFFF;
   --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -17,13 +17,13 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0F141B; --surface:#161D26; --sunk:#1C2530; --ink:#E6EAF0; --muted:#9AA6B6; --line:#2A3542;
   --accent:#86A6FF; --rec:#FF6E60;
-  --a1:#A595FF; --a2:#F39459; --a3:#4CC7B3; --a4:#F07BC6; --a5:#6FAEFF; --a6:#A4AEBD;
+  --a1:#A595FF; --a2:#E2B045; --a3:#4CC7B3; --a4:#F07BC6; --a5:#6FAEFF; --a6:#A4AEBD;
   --on-solid:#0F141B; color-scheme:dark;
 }}
 :root[data-theme="dark"]{
   --bg:#0F141B; --surface:#161D26; --sunk:#1C2530; --ink:#E6EAF0; --muted:#9AA6B6; --line:#2A3542;
   --accent:#86A6FF; --rec:#FF6E60;
-  --a1:#A595FF; --a2:#F39459; --a3:#4CC7B3; --a4:#F07BC6; --a5:#6FAEFF; --a6:#A4AEBD;
+  --a1:#A595FF; --a2:#E2B045; --a3:#4CC7B3; --a4:#F07BC6; --a5:#6FAEFF; --a6:#A4AEBD;
   --on-solid:#0F141B; color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -140,6 +140,55 @@ section{padding-block:40px;border-top:1px solid var(--line)}
 .cat td{font-size:.86rem}
 .cat .rn{font-weight:600;white-space:nowrap}
 
+/* colores y códigos */
+.rcode{display:inline-grid;place-items:center;min-width:30px;height:22px;padding:0 6px;border-radius:4px;font-family:var(--f-mono);font-size:.74rem;font-weight:500;color:var(--on-solid);flex:none;letter-spacing:.02em;border:1.5px solid transparent}
+.rcode.ap{background:transparent!important;border-color:currentColor}
+.role-h .rname{display:flex;gap:8px;align-items:flex-start;min-width:0}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:6px;align-content:start}
+.rule .n{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.rule p{font-size:.88rem;color:var(--muted)}
+.rule .ex{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sub{margin-top:30px;margin-bottom:12px;display:grid;gap:4px}
+.sub p{color:var(--muted);font-size:.92rem;max-width:72ch}
+.pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.sw{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.sw.alert{grid-column:1/-1}
+.sw-c{height:52px;display:flex;justify-content:space-between;align-items:flex-end;padding:8px 12px;color:var(--on-solid);font-family:var(--f-mono);font-size:.78rem}
+.sw-b{padding:12px 14px;display:grid;gap:10px;align-content:start}
+.sw-d{display:grid;gap:6px}
+.sw-d > .mono{font-size:.72rem;color:var(--muted)}
+.rc-list{display:flex;flex-wrap:wrap;gap:6px 12px}
+.rc-item{display:inline-flex;gap:6px;align-items:center;font-size:.86rem}
+.sw-meta{margin:0;display:grid;gap:3px;font-size:.78rem;border-top:1px solid var(--line);padding-top:8px}
+.sw-meta div{display:grid;grid-template-columns:128px minmax(0,1fr);gap:6px}
+.sw-meta dt{color:var(--muted)}
+.sw-meta dd{margin:0}
+.anat{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.seg{display:grid;gap:6px;justify-items:start}
+.seg code{font-family:var(--f-mono);font-size:1.35rem;font-weight:500;padding:2px 8px;border-radius:6px;background:var(--sunk);border:2px solid transparent}
+.seg span{font-size:.78rem;color:var(--muted);line-height:1.35}
+.seg code.fill{background:var(--a3);color:var(--on-solid)}
+.seg code.out{background:transparent;border-color:var(--a3);color:var(--a3)}
+.seg code.arrow{background:none;color:var(--muted);padding-inline:0}
+.anat-read{margin-top:10px;color:var(--muted);font-size:.92rem}
+.st-pill{display:inline-flex;gap:6px;align-items:center;font-size:.8rem;padding:2px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.st-pill i{font-style:normal;font-family:var(--f-mono)}
+.st-pill.blocked{border-color:var(--rec);color:var(--rec);font-weight:600}
+.st-pill.done{color:var(--muted)}
+.demo td{vertical-align:middle}
+.demo .who{display:flex;gap:4px;flex-wrap:wrap}
+.demo tr.done .tn{color:var(--muted);text-decoration:line-through}
+.demo .tid{font-family:var(--f-mono);font-size:.78rem;white-space:nowrap;color:var(--muted)}
+.demo .due{font-family:var(--f-mono);font-size:.8rem;white-space:nowrap}
+.demo .late{color:var(--rec)}
+.cal{display:grid;gap:6px}
+.ev{display:flex;gap:10px;align-items:center;font-size:.88rem;padding:8px 10px;border-radius:6px;background:var(--sunk);min-width:0}
+.ev .sq{width:12px;height:12px;border-radius:3px;flex:none}
+.ev .tm{font-family:var(--f-mono);font-size:.76rem;color:var(--muted);flex:none;width:72px}
+.persona{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.9rem}
+.persona b{font-weight:600;margin-right:4px}
+
 /* matriz */
 .scroll-x{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:.88rem}
@@ -198,13 +247,15 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
 
 @media (max-width:900px){
   .layers{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rules{grid-template-columns:repeat(2,minmax(0,1fr))}
   .org-areas{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mods{grid-template-columns:repeat(2,minmax(0,1fr))}
   .dept-body{grid-template-columns:minmax(0,1fr)}
   .dept-body > div + div{border-left:none;border-top:1px solid var(--line)}
 }
 @media (max-width:560px){
-  .layers,.mods,.two{grid-template-columns:minmax(0,1fr)}
+  .layers,.mods,.two,.rules,.pal{grid-template-columns:minmax(0,1fr)}
+  .sw-meta div{grid-template-columns:minmax(0,1fr);gap:0}
   .org-areas{grid-template-columns:minmax(0,1fr)}
   .slate{grid-template-columns:repeat(2,minmax(0,1fr))}
   .slate div.cell:nth-child(3){border-right:none}
@@ -222,6 +273,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     <a href="#organigrama">Organigrama</a>
     <a href="#departamentos">Departamentos</a>
     <a href="#roles">Roles</a>
+    <a href="#codigos">Colores y códigos</a>
     <a href="#matriz">Matriz × fases</a>
     <a href="#flujo">Flujo y puertas</a>
     <a href="#modulos">Sistema de gestión</a>
@@ -236,7 +288,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     <div class="slate" aria-label="Datos del documento">
       <div class="stripes"></div>
       <div class="cell"><span>Producción</span><b>Podcast [nombre por definir]</b></div>
-      <div class="cell"><span>Documento</span><b>Arquitectura v0.3</b></div>
+      <div class="cell"><span>Documento</span><b>Arquitectura v0.4</b></div>
       <div class="cell"><span>Fecha</span><b>2026-11-25</b></div>
       <div class="cell"><span>Estado</span><b class="rec">● Para aprobación</b></div>
     </div>
@@ -300,6 +352,61 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
       <p>Los 26 roles en una sola tabla. Un rol es un conjunto de responsabilidades, no una persona: una misma persona puede cubrir varios roles. Cada departamento tiene un rol marcado como responsable. La columna "Asignado a" se llena cuando definamos al equipo.</p>
     </div>
     <div class="scroll-x"><table class="cat" id="cat"></table></div>
+  </div>
+</section>
+
+<section id="codigos">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Identificación visual</span>
+      <h2>Colores y códigos: quién hace qué, de un vistazo</h2>
+      <p>Cada área tiene un color y cada rol un código de dos letras. Así, en cualquier tarea, evento del calendario, hoja de llamado o mensaje se sabe de inmediato de qué área es y quién lo tiene que hacer.</p>
+    </div>
+
+    <div class="rules">
+      <div class="rule"><span class="n">Regla 1</span><b>El color indica el área</b><p>Seis colores, uno por área. Todos los departamentos y roles de un área comparten su color.</p></div>
+      <div class="rule"><span class="n">Regla 2</span><b>El código indica el rol</b><p>Dos letras por rol, únicas en todo el sistema. El código no cambia aunque cambie la persona.</p></div>
+      <div class="rule"><span class="n">Regla 3</span><b>Relleno hace, contorno aprueba</b><div class="ex" id="ex-fill"></div><p>Código con relleno: quien hace la tarea. Código con contorno: quien la aprueba.</p></div>
+      <div class="rule"><span class="n">Regla 4</span><b>El rojo es solo para alertas</b><p>Ningún área usa rojo. Rojo significa bloqueado, vencido o puerta de aprobación pendiente.</p></div>
+      <div class="rule"><span class="n">Regla 5</span><b>Nunca el color solo</b><p>El color siempre va con el código. Así lo distingue quien no ve bien los colores y funciona impreso en blanco y negro.</p></div>
+      <div class="rule"><span class="n">Regla 6</span><b>Una persona, varios códigos</b><div class="ex" id="ex-persona"></div><p>Quien cubre varios roles lleva todos sus códigos. En "Mis tareas" ve todo lo de sus códigos.</p></div>
+    </div>
+
+    <div class="sub"><h3>Paleta por área y códigos de rol</h3><p>Los nombres de color coinciden con los de Notion y Google Calendar para que se puedan aplicar tal cual. En otra herramienta se usa el color más parecido.</p></div>
+    <div class="pal" id="pal"></div>
+
+    <div class="sub"><h3>Cómo se lee una tarea</h3><p>Toda tarea del sistema se nombra igual: episodio, fase, número de tarea, quién la hace y quién la aprueba.</p></div>
+    <div class="anat">
+      <div class="seg"><code>T01E03</code><span>Episodio<br>temporada 1, ep. 3</span></div>
+      <div class="seg"><code>F1</code><span>Fase<br>Preproducción</span></div>
+      <div class="seg"><code>1.4</code><span>Tarea<br>de la matriz</span></div>
+      <div class="seg"><code class="fill">BK</code><span>Lo hace<br>Booker</span></div>
+      <div class="seg"><code class="arrow">→</code></div>
+      <div class="seg"><code class="out">PR</code><span>Lo aprueba<br>Productor/a</span></div>
+    </div>
+    <p class="anat-read">Se lee: en el episodio 3, durante preproducción, la tarea 1.4 (autorización firmada) la hace el Booker y la aprueba el Productor/a. Los dos son verdes porque pertenecen a Producción y Técnica.</p>
+
+    <div class="sub"><h3>Así se ve en el sistema</h3><p>Ejemplo de la lista de tareas del episodio T01E03 a una semana de grabar. Son tareas de muestra, no datos reales.</p></div>
+    <div class="scroll-x"><table class="demo" id="demo"></table></div>
+    <div class="legend" id="st-legend"></div>
+
+    <div class="two">
+      <div class="box">
+        <h4>En el calendario</h4>
+        <p class="flow">El evento toma el color del área de quien lo lidera (el primer código). El título empieza con los códigos de quienes deben estar.</p>
+        <div class="cal" id="cal"></div>
+      </div>
+      <div class="box">
+        <h4>Dónde más se aplica</h4>
+        <ul>
+          <li><b>Hoja de llamado:</b> cada persona aparece con sus códigos y color.</li>
+          <li><b>Chats:</b> un grupo por área, con su color en el ícono. Los avisos empiezan con el código: "BK → PR: T01E03 · 1.4 bloqueada, falta la firma".</li>
+          <li><b>Día de grabación:</b> gafete o cinta del color del área con el código del rol, para que el invitado y el equipo sepan a quién acudir.</li>
+          <li><b>Equipo técnico:</b> cinta del color del área responsable en cada estuche (verde: Audio y Video).</li>
+          <li><b>Carpetas compartidas:</b> cada área con su color en Drive o Dropbox.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -426,6 +533,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
     <div class="approve">
       <div class="q"><div><b>Áreas y departamentos.</b><p>¿Te sirven las 6 áreas y los 11 departamentos? ¿Quieres fusionar, quitar o agregar alguno? Por ejemplo, Comercial puede salir si no vas a monetizar todavía.</p></div></div>
       <div class="q"><div><b>Roles.</b><p>¿Los 26 roles y lo que hace cada uno te hacen sentido? ¿Ya tienes personas para alguno? Dime nombres y los asigno en "Asignado a".</p></div></div>
+      <div class="q"><div><b>Colores y códigos.</b><p>¿Te funcionan los 6 colores por área y los códigos de 2 letras? Si algún código no se entiende fácil para tu equipo, lo cambiamos ahora, antes de cargarlo al sistema.</p></div></div>
       <div class="q"><div><b>Publicación dentro de Marketing.</b><p>En la v0.1 publicar era tarea de Producción. Aquí la pasé a Distribución y Marketing, y Producción solo verifica. ¿De acuerdo?</p></div></div>
       <div class="q"><div><b>Flujo de 11 estados y 7 puertas.</b><p>¿Agregarías o quitarías alguna aprobación? Por ejemplo, que el invitado apruebe el corte antes de publicar.</p></div></div>
       <div class="q"><div><b>Módulos de la primera versión.</b><p>Propongo empezar con Episodios, Tareas, Personas, Invitados, Banco de temas, Calendario y Presupuesto. ¿Cambiarías alguno?</p></div></div>
@@ -436,7 +544,7 @@ footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1p
 </section>
 
 <footer>
-  <div class="wrap">Arquitectura v0.3 · Basada en el sistema v0.1 del repositorio (matriz, fases, anexos y plantillas). Después de tu visto bueno se actualizan MATRIZ.md, el CSV de tareas y la RACI con estos departamentos.</div>
+  <div class="wrap">Arquitectura v0.4 · Basada en el sistema v0.1 del repositorio (matriz, fases, anexos y plantillas). Después de tu visto bueno se actualizan MATRIZ.md, el CSV de tareas y la RACI con estos departamentos.</div>
 </footer>
 
 <script>
@@ -570,10 +678,28 @@ const ROLES = [
  {d:"ADM", r:"Contador/a", tipo:"Externo", rep:"Administrador/a", ded:"Mensual", sum:"Mantiene en orden la contabilidad y los impuestos.", does:["Lleva la contabilidad mensual","Emite y revisa facturas","Presenta las declaraciones de impuestos"]},
  {d:"ADM", r:"Abogado/a", tipo:"Externo", rep:"Administrador/a", ded:"Por consulta", sum:"Protege al show en lo legal.", does:["Redacta la autorización del invitado y los contratos tipo","Registra la marca","Revisa contratos de patrocinio y licencias"]}
 ];
+const RCODE = {
+ "Productor/a ejecutivo/a":"PE",
+ "Editor/a de contenido (guionista)":"ED","Host / conductor(a)":"HO","Investigador/a":"IN",
+ "Productor/a":"PR","Booker de invitados":"BK","Asistente de producción":"AP",
+ "Ingeniero/a de sonido":"SO",
+ "Realizador/a":"RE","Camarógrafo/a":"CA","Iluminador/a":"IL",
+ "Coordinador/a de postproducción":"CP","Editor/a de audio":"EA","Editor/a de video":"EV","Editor/a de clips":"CL",
+ "Diseñador/a gráfico/a":"DG","Motion designer":"MO",
+ "Estratega de crecimiento":"EG","Responsable de publicación":"RP","Community manager":"CM",
+ "Analista":"AN",
+ "Ejecutivo/a comercial":"VE","Account manager":"AM",
+ "Administrador/a":"AD","Contador/a":"CO","Abogado/a":"AB"
+};
+ROLES.forEach(r => { r.k = RCODE[r.r]; });
 const rolesOf = code => ROLES.filter(r => r.d === code);
+const roleColor = r => color(areaOf(DEPTS.find(d => d.code === r.d).area));
+const roleByCode = k => ROLES.find(r => r.k === k);
+const codeChip = (k, approve) => { const r = roleByCode(k); const c = roleColor(r);
+  return approve ? `<span class="rcode ap" style="color:${c}" title="Aprueba: ${esc(r.r)}">${k}</span>` : `<span class="rcode" style="background:${c}" title="${esc(r.r)}">${k}</span>`; };
 const nRoles = code => { const n = rolesOf(code).length; return n + (n === 1 ? " rol" : " roles"); };
 function roleCard(r){
-  return `<div class="role"><div class="role-h"><b>${esc(r.r)}</b><span class="bs">${r.lead ? `<span class="badge lead">Responsable</span>` : ""}${r.opt ? `<span class="badge opt">Opcional</span>` : ""}</span></div>
+  return `<div class="role"><div class="role-h"><span class="rname">${codeChip(r.k)}<b>${esc(r.r)}</b></span><span class="bs">${r.lead ? `<span class="badge lead">Responsable</span>` : ""}${r.opt ? `<span class="badge opt">Opcional</span>` : ""}</span></div>
     <p class="sum">${esc(r.sum)}</p>
     <ul>${r.does.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
     <dl><div><dt>Reporta a</dt><dd>${esc(r.rep)}</dd></div><div><dt>Dedicación</dt><dd>${esc(r.ded)}</dd></div><div><dt>Tipo</dt><dd>${esc(r.tipo)}</dd></div><div><dt>Asignado a</dt><dd><span class="tbd">Por definir</span></dd></div></dl>
@@ -701,13 +827,68 @@ document.getElementById("mods").innerHTML = MODS.map(m =>
 
 // Catálogo de roles
 (function(){
-  let h = `<thead><tr><th>Rol</th><th>Depto.</th><th>Qué hace</th><th>Reporta a</th><th>Tipo</th><th>Dedicación</th><th>Asignado a</th></tr></thead><tbody>`;
+  let h = `<thead><tr><th>Código</th><th>Rol</th><th>Depto.</th><th>Qué hace</th><th>Reporta a</th><th>Tipo</th><th>Dedicación</th><th>Asignado a</th></tr></thead><tbody>`;
   DEPTS.forEach(d => {
     const a = areaOf(d.area);
     rolesOf(d.code).forEach(r => {
-      h += `<tr><td class="rn">${esc(r.r)}${r.lead ? ` <span class="badge lead">Resp.</span>` : ""}</td><td><span class="chip" style="background:${color(a)}">${d.code}</span></td><td class="what">${esc(r.sum)}</td><td>${esc(r.rep)}</td><td>${esc(r.tipo)}</td><td>${esc(r.ded)}</td><td><span class="tbd">Por definir</span></td></tr>`;
+      h += `<tr><td>${codeChip(r.k)}</td><td class="rn">${esc(r.r)}${r.lead ? ` <span class="badge lead">Resp.</span>` : ""}</td><td><span class="chip" style="background:${color(a)}">${d.code}</span></td><td class="what">${esc(r.sum)}</td><td>${esc(r.rep)}</td><td>${esc(r.tipo)}</td><td>${esc(r.ded)}</td><td><span class="tbd">Por definir</span></td></tr>`;
     });
   });
   document.getElementById("cat").innerHTML = h + `</tbody>`;
+})();
+
+// Colores y códigos
+(function(){
+  const META = {
+    dir:{cn:"Morado",notion:"Purple",gcal:"Uva",hex:"#5B47C2 / #A595FF"},
+    cont:{cn:"Ocre",notion:"Yellow",gcal:"Plátano",hex:"#9A6200 / #E2B045"},
+    prod:{cn:"Verde",notion:"Green",gcal:"Albahaca",hex:"#0E7466 / #4CC7B3"},
+    post:{cn:"Rosa",notion:"Pink",gcal:"Flamenco",hex:"#A9237A / #F07BC6"},
+    aud:{cn:"Azul",notion:"Blue",gcal:"Arándano",hex:"#1F68C7 / #6FAEFF"},
+    adm:{cn:"Gris",notion:"Gray",gcal:"Grafito",hex:"#5E6878 / #A4AEBD"}
+  };
+  const meta = m => `<dl class="sw-meta"><div><dt>Notion</dt><dd>${m.notion}</dd></div><div><dt>Google Calendar</dt><dd>${m.gcal}</dd></div><div><dt>Hex claro / oscuro</dt><dd class="mono">${m.hex}</dd></div></dl>`;
+  let h = AREAS.map(a => {
+    const m = META[a.id];
+    const ds = DEPTS.filter(d => d.area === a.id).map(d =>
+      `<div class="sw-d"><span class="mono">${d.code} · ${esc(d.n)}</span><div class="rc-list">${rolesOf(d.code).map(r => `<span class="rc-item">${codeChip(r.k)}${esc(r.r)}</span>`).join("")}</div></div>`).join("");
+    return `<div class="sw"><div class="sw-c" style="background:${color(a)}"><span>${m.cn}</span><span>${esc(a.n)}</span></div><div class="sw-b">${ds}${meta(m)}</div></div>`;
+  }).join("");
+  h += `<div class="sw alert"><div class="sw-c" style="background:var(--rec)"><span>Rojo</span><span>Alertas (no es un área)</span></div><div class="sw-b"><p class="flow">Solo para avisar: tarea bloqueada, tarea vencida o puerta de aprobación pendiente. Si algo está en rojo, alguien tiene que actuar hoy.</p>${meta({notion:"Red",gcal:"Tomate",hex:"#C9362A / #FF6E60"})}</div></div>`;
+  document.getElementById("pal").innerHTML = h;
+
+  document.getElementById("ex-fill").innerHTML = `${codeChip("EA")}<span class="flow">hace</span>${codeChip("ED", true)}<span class="flow">aprueba</span>`;
+  document.getElementById("ex-persona").innerHTML = `<span class="persona"><b>Persona A</b>${codeChip("PR")}${codeChip("BK")}${codeChip("AD")}</span>`;
+
+  const ST = {todo:["○","Por hacer"],doing:["◐","En curso"],review:["◎","En revisión"],blocked:["!","Bloqueado"],done:["✓","Hecho"]};
+  const pill = s => `<span class="st-pill ${s}"><i>${ST[s][0]}</i>${ST[s][1]}</span>`;
+  const DEMO = [
+    {id:"F1 · 1.1",t:"Aprobar tema y ángulo",R:["ED"],A:"PE",due:"G−21",st:"done"},
+    {id:"F1 · 1.2",t:"Contactar al invitado",R:["BK"],A:"PR",due:"G−21",st:"done"},
+    {id:"F1 · 1.4",t:"Autorización firmada del invitado",R:["BK"],A:"PR",due:"G−7",st:"blocked",late:1},
+    {id:"F1 · 1.5",t:"Dossier de investigación",R:["IN"],A:"ED",due:"G−7",st:"doing"},
+    {id:"F1 · 1.6",t:"Escaleta con tiempos",R:["ED"],A:"HO",due:"G−7",st:"review"},
+    {id:"F1 · 1.9",t:"Prueba técnica con el invitado",R:["SO"],A:"PR",due:"G−2",st:"todo"},
+    {id:"F1 · 1.10",t:"Hoja de llamado",R:["AP"],A:"PR",due:"G−2",st:"todo"},
+    {id:"F1 · 1.11",t:"Gráficos en pantalla",R:["DG"],A:"RE",due:"G−1",st:"todo"},
+    {id:"F2 · 2.5",t:"Grabación",R:["HO","SO","RE","CA"],A:"PR",due:"G",st:"todo"}
+  ];
+  let t = `<thead><tr><th>Tarea</th><th></th><th>Lo hace</th><th>Aprueba</th><th>Vence</th><th>Estado</th></tr></thead><tbody>`;
+  DEMO.forEach(x => {
+    t += `<tr class="${x.st}"><td class="tid">T01E03 · ${x.id}</td><td class="tn">${esc(x.t)}</td><td><div class="who">${x.R.map(k => codeChip(k)).join("")}</div></td><td>${codeChip(x.A, true)}</td><td class="due${x.late ? " late" : ""}">${x.due}</td><td>${pill(x.st)}</td></tr>`;
+  });
+  document.getElementById("demo").innerHTML = t + `</tbody>`;
+  document.getElementById("st-legend").innerHTML = Object.keys(ST).map(pill).join("") + `<span>Los estados no usan colores de área; solo "Bloqueado" usa rojo.</span>`;
+
+  const CAL = [
+    {tm:"Lun 10:00",c:["ED","PE","PR","EG"],t:"Junta editorial"},
+    {tm:"Mar 09:00",c:["SO","RE","CA"],t:"Montaje de set · T01E03"},
+    {tm:"Mar 11:00",c:["PR","HO","SO","RE"],t:"Grabación · T01E03"},
+    {tm:"Jue 16:00",c:["EA","ED"],t:"Revisión de corte 1 · T01E03"},
+    {tm:"Vie 12:00",c:["RP"],t:"Publicación · T01E02"},
+    {tm:"Vie 18:00",c:["AD"],t:"Pago a freelancers"}
+  ];
+  document.getElementById("cal").innerHTML = CAL.map(e =>
+    `<div class="ev"><span class="sq" style="background:${roleColor(roleByCode(e.c[0]))}"></span><span class="tm">${e.tm}</span><span><span class="mono">${e.c.map(k => "[" + k + "]").join("")}</span> ${esc(e.t)}</span></div>`).join("");
 })();
 </script>
