@@ -1,0 +1,50 @@
+ID,Fase,Tarea,Responsable,Herramienta,Entregable,Criterio de terminado,Momento,Dias relativos a G,Aplica a
+1.1,Preproduccion,Proponer y aprobar tema/angulo,PE;HO,Ficha de episodio,Ficha con angulo y objetivo,Aprobado por PE,G-21,-21,Todos
+1.2,Preproduccion,Identificar y contactar invitado,PR,Plantilla de invitacion,Invitacion enviada,Respuesta recibida,G-21,-21,Entrevista
+1.3,Preproduccion,Confirmar invitado fecha y modalidad,PR,Calendario,Evento en calendario,Fecha confirmada por escrito,G-14,-14,Entrevista
+1.4,Preproduccion,Cesion de derechos firmada,PR,Firma electronica,Cesion firmada,Archivada en carpeta legal,Antes de G,-7,Entrevista
+1.5,Preproduccion,Investigacion del tema e invitado,IN,Docs,Dossier,Datos verificados con fuente,G-7,-7,Todos
+1.6,Preproduccion,Escaleta / guion,IN;HO,Plantilla de escaleta,Escaleta con tiempos,Aprobada por HO,G-7,-7,Todos
+1.7,Preproduccion,Brief para el invitado,PR,Plantilla,Brief enviado,Invitado confirma recepcion,G-7,-7,Entrevista
+1.8,Preproduccion,Reserva de estudio equipo y personal,PR,Calendario,Reservas confirmadas,Todo confirmado,G-7,-7,Todos
+1.9,Preproduccion,Prueba tecnica invitado remoto,SO,Plataforma remota,Prueba OK,Audio/video del invitado aprobado,G-2,-2,Remoto
+1.10,Preproduccion,Hoja de llamado,PR,Plantilla,Hoja enviada,Todos confirman,G-2,-2,Todos
+1.11,Preproduccion,Materiales en pantalla,DI,Diseno,Archivos listos,Revisados,G-1,-1,Video
+2.1,Produccion,Montaje de set luces camaras y microfonos,SO;CA,Checklist tecnico,Set listo,Checklist completo,G,0,Todos
+2.2,Produccion,Configurar formatos 48kHz/24bit fps resolucion,SO;CA,Specs tecnicas,Configuracion verificada,Todas las fuentes iguales,G,0,Todos
+2.3,Produccion,Prueba de niveles y camara,SO;CA,Grabacion de prueba,Clip de prueba,Picos -12 a -6 dBFS sin ruido,G,0,Todos
+2.4,Produccion,Recepcion y briefing del invitado,PR,-,-,Invitado listo,G,0,Entrevista
+2.5,Produccion,Grabacion con pistas aisladas y respaldo,HO;SO;CA,Grabadora y camaras,Archivos brutos,Grabado completo,G,0,Todos
+2.6,Produccion,Bitacora de grabacion,PR,Hoja de llamado,Bitacora,Marcas para edicion y clips,G,0,Todos
+2.7,Produccion,Grabar extras,PR;CA,-,Material extra,Lista de extras cubierta,G,0,Video
+2.8,Produccion,Descarga y respaldo 3-2-1,PR,Disco + nube,2+ copias verificadas,Tamanos/checksums coinciden,G,0,Todos
+2.9,Produccion,Desmontaje e inventario,SO;CA,Inventario,Equipo guardado,Nada faltante,G,0,Estudio
+3.1,Postproduccion,Ingesta y organizacion,EA;EV,Estructura de carpetas,Proyecto creado,Nombres segun convencion,G+1,1,Todos
+3.2,Postproduccion,Sincronizacion,EV,Premiere/Resolve,Multicamara sincronizado,Sin desfase al final,G+1,1,Video
+3.3,Postproduccion,Transcripcion,EA,Descript/Whisper,Transcripcion,Nombres propios revisados,G+1,1,Todos
+3.4,Postproduccion,Corte editorial,EA;HO,DAW/Descript,Corte 1,Aprobado por HO/PE,G+2,2,Todos
+3.5,Postproduccion,Limpieza de audio,EA,iZotope RX/Audition,Pistas limpias,Sin ruidos que distraigan,G+3,3,Todos
+3.6,Postproduccion,Mezcla,EA,DAW,Mezcla,Voces balanceadas,G+3,3,Todos
+3.7,Postproduccion,Masterizacion,EA,Auphonic/limitador,Master,-16 LUFS +-1 y TP <= -1 dBTP,G+3,3,Todos
+3.8,Postproduccion,Edicion de video,EV,Premiere/Resolve,Video horizontal,Aprobado por PE,G+4,4,Video
+3.9,Postproduccion,Clips verticales,EV,Editor/Opus/CapCut,3-8 clips 9:16,Revisados,G+4,4,Todos
+3.10,Postproduccion,Control de calidad,PR,Checklist QC,QC firmado,Sin pendientes,G+5,5,Todos
+3.11,Postproduccion,Aprobacion del invitado,PR,-,Visto bueno,Por escrito,G+5,5,Si se acordo
+3.12,Postproduccion,Exportar entregables,EA;EV,Specs tecnicas,MP3/WAV/MP4/SRT,Cumplen specs,G+5,5,Todos
+3.13,Postproduccion,Archivar proyecto,EA;EV,Disco + nube,Carpeta final,Proyecto abre desde archivo,G+7,7,Todos
+4.1,Distribucion,Titulo descripcion notas y enlaces,PR;IN,Ficha de episodio,Metadatos,Revisados,G+5,5,Todos
+4.2,Distribucion,Capitulos,EA,Hosting/YouTube,Capitulos,Coinciden con master,G+5,5,Todos
+4.3,Distribucion,Portada de episodio y miniatura,DI,Plantillas,Imagenes,Legibles en movil,G+5,5,Todos
+4.4,Distribucion,Subir al hosting y programar,PR,Hosting,Episodio programado,Vista previa revisada,G+6,6,Todos
+4.5,Distribucion,Subir y programar en YouTube,PR,YouTube Studio,Video programado,Miniatura capitulos subs playlist,G+6,6,Video
+4.6,Distribucion,Verificar publicacion,PR,Spotify/Apple/YouTube,Enlaces finales,Visible y reproduce,P,7,Todos
+4.7,Distribucion,Pagina del episodio con transcripcion,PR,Web,Pagina,Enlazada,P,7,Opcional
+5.1,Promocion,Calendario de publicaciones,CM,Planner de redes,Calendario P-2 a P+14,Programado,G+6,6,Todos
+5.2,Promocion,Teaser,CM,Redes,Post,Publicado,P-2,5,Todos
+5.3,Promocion,Clips verticales escalonados,CM,Reels/TikTok/Shorts,3-8 publicaciones,Programadas,P a P+14,7,Todos
+5.4,Promocion,Kit para el invitado,CM,Drive,Kit enviado,Invitado confirma,P,7,Entrevista
+5.5,Promocion,Newsletter / comunidad,CM,Email,Envio,Enviado,P,7,Opcional
+5.6,Promocion,Responder comentarios,CM;HO,Plataformas,-,Respuesta < 48 h,P a P+7,7,Todos
+6.1,Medicion,Metricas a 7 dias,AN,Hosting y plataformas,Fila en tablero,Datos capturados,P+7,14,Todos
+6.2,Medicion,Metricas a 30 dias,AN,Hosting y plataformas,Fila en tablero,Datos capturados,P+30,37,Todos
+6.3,Medicion,Retro del episodio,Todos,Ficha de episodio,3 aprendizajes,Acciones asignadas,P+7,14,Todos
