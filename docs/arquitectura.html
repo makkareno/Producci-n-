@@ -1,0 +1,637 @@
+<title>Arquitectura de Producción del Podcast</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: documento de una columna (máx. 1120px), navegación fija arriba; cada área es una banda con sus departamentos en fichas. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --sunk:#E9EDF2; --ink:#17202B; --muted:#566173; --line:#D7DDE5;
+  --accent:#2A55C9; --rec:#C9362A;
+  --a1:#5B47C2; --a2:#B9480E; --a3:#0E7466; --a4:#A9237A; --a5:#1F68C7; --a6:#5E6878;
+  --on-solid:#FFFFFF;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#161D26; --sunk:#1C2530; --ink:#E6EAF0; --muted:#9AA6B6; --line:#2A3542;
+  --accent:#86A6FF; --rec:#FF6E60;
+  --a1:#A595FF; --a2:#F39459; --a3:#4CC7B3; --a4:#F07BC6; --a5:#6FAEFF; --a6:#A4AEBD;
+  --on-solid:#0F141B; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#161D26; --sunk:#1C2530; --ink:#E6EAF0; --muted:#9AA6B6; --line:#2A3542;
+  --accent:#86A6FF; --rec:#FF6E60;
+  --a1:#A595FF; --a2:#F39459; --a3:#4CC7B3; --a4:#F07BC6; --a5:#6FAEFF; --a6:#A4AEBD;
+  --on-solid:#0F141B; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h2{font-size:clamp(1.45rem,2.6vw,1.9rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:700}
+h4{font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--f-body)}
+p{margin:0}
+.mono{font-family:var(--f-mono)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;gap:6px;align-items:center;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+nav.top .wrap::-webkit-scrollbar{display:none}
+nav.top a{flex:none;text-decoration:none;color:var(--muted);font-size:.85rem;font-weight:500;padding:6px 10px;border-radius:6px;white-space:nowrap}
+nav.top a:hover{background:var(--sunk);color:var(--ink)}
+nav.top .brand{font-family:var(--f-mono);color:var(--ink);font-weight:500;margin-right:6px}
+
+/* hero / claqueta */
+header.hero{padding-block:40px 28px}
+.slate{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;font-family:var(--f-mono);font-size:.78rem;max-width:640px;margin-bottom:28px}
+.slate .stripes{grid-column:1/-1;height:18px;background:repeating-linear-gradient(-45deg,var(--ink) 0 14px,var(--surface) 14px 28px)}
+.slate div.cell{padding:8px 10px;border-top:1.5px solid var(--ink);border-right:1.5px solid var(--ink);min-width:0}
+.slate div.cell:nth-child(5){border-right:none}
+.slate div.cell span{display:block;color:var(--muted);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase}
+.slate div.cell b{font-weight:500;color:var(--ink)}
+.slate div.cell b.rec{color:var(--rec)}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.02em;max-width:18ch}
+.hero .lede{margin-top:14px;font-size:1.06rem;color:var(--muted);max-width:64ch}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:24px;font-variant-numeric:tabular-nums}
+.stats div{display:flex;align-items:baseline;gap:6px}
+.stats b{font-family:var(--f-display);font-size:1.5rem;font-weight:700}
+.stats span{color:var(--muted);font-size:.9rem}
+
+section{padding-block:40px;border-top:1px solid var(--line)}
+.sec-head{display:grid;gap:8px;margin-bottom:22px;max-width:72ch}
+.sec-head .eyebrow{font-family:var(--f-mono);font-size:.75rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.sec-head p{color:var(--muted)}
+
+/* capas */
+.layers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.layer{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:6px;align-content:start}
+.layer .n{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.layer p{color:var(--muted);font-size:.9rem}
+
+/* organigrama */
+.org{display:grid;gap:14px}
+.org-top{display:flex;justify-content:center}
+.org-node{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--ink);display:grid;gap:2px}
+.org-node:hover{border-color:var(--ink)}
+.org-node .code{font-family:var(--f-mono);font-size:.72rem;font-weight:500}
+.org-node .nm{font-weight:600;font-size:.92rem;line-height:1.3}
+.org-areas{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.org-area{display:grid;gap:8px;align-content:start}
+.org-area .ah{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding-bottom:6px;border-bottom:2px solid currentColor}
+.org-line{height:16px;width:2px;background:var(--line);margin:0 auto}
+
+/* departamentos */
+.area-band{margin-top:26px}
+.area-band:first-child{margin-top:0}
+.area-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.area-title .dot{width:12px;height:12px;border-radius:3px;flex:none}
+.area-title h3{font-size:1.05rem}
+.area-title small{color:var(--muted);font-size:.85rem}
+.dept{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.dept-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;padding:18px 20px;border-bottom:1px solid var(--line)}
+.chip{font-family:var(--f-mono);font-size:.75rem;font-weight:500;padding:3px 8px;border-radius:4px;color:var(--on-solid);flex:none}
+.dept-head .t{flex:1 1 320px;min-width:0;display:grid;gap:4px}
+.dept-head .t p{color:var(--muted)}
+.tag-opt{font-size:.72rem;border:1px dashed var(--muted);color:var(--muted);padding:2px 7px;border-radius:4px;white-space:nowrap}
+.dept-body{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);}
+.dept-body > div{padding:16px 20px;display:grid;gap:14px;align-content:start;min-width:0}
+.dept-body > div + div{border-left:1px solid var(--line);background:var(--sunk)}
+.blk{display:grid;gap:6px}
+.blk ul{margin:0;padding-left:18px}
+.blk li{margin:2px 0}
+.phase-list{display:grid;gap:6px}
+.phase-row{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;font-size:.92rem}
+.phase-row .ph{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);padding-top:3px}
+.needs{display:grid;gap:8px}
+.need{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;font-size:.88rem}
+.need span{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+.flow{font-size:.86rem;color:var(--muted)}
+.flow b{color:var(--ink);font-weight:600}
+.pill-list{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:.8rem;background:var(--surface);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+.dept-body > div:first-child .pill{background:var(--sunk)}
+
+/* matriz */
+.scroll-x{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;background:var(--sunk);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+.mx td.c{text-align:center;width:11%;padding:6px}
+.mx th.c{text-align:center}
+.mx .dn{white-space:nowrap;font-weight:500}
+.cell-L,.cell-P,.cell-I{display:inline-grid;place-items:center;width:30px;height:24px;border-radius:4px;font-family:var(--f-mono);font-size:.75rem;font-weight:500}
+.cell-L{background:var(--ink);color:var(--bg)}
+.cell-P{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--ink)}
+.cell-I{border:1px solid var(--line);color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:.85rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+
+/* pipeline */
+.pipe{display:flex;align-items:stretch;gap:0;min-width:max-content;padding:18px}
+.st{display:grid;gap:4px;align-content:start;width:132px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.st .k{font-family:var(--f-mono);font-size:.68rem;color:var(--muted)}
+.st b{font-size:.88rem;line-height:1.25}
+.st small{color:var(--muted);font-size:.76rem;line-height:1.35}
+.gap{width:34px;display:grid;place-items:center;position:relative}
+.gap::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--line)}
+.gate{position:relative;width:24px;height:24px;transform:rotate(45deg);background:var(--rec);border-radius:3px;display:grid;place-items:center}
+.gate i{transform:rotate(-45deg);font-style:normal;font-family:var(--f-mono);font-size:.62rem;color:var(--on-solid);font-weight:500}
+.gates{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-top:16px}
+.gcard{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px}
+.gcard .gate{width:20px;height:20px;margin:4px 0 0 4px}
+.gcard p{font-size:.88rem;color:var(--muted)}
+.gcard b{font-size:.92rem}
+
+/* módulos */
+.mods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:8px;align-content:start}
+.mod.core{border-color:var(--ink)}
+.mod-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mod-h b{font-family:var(--f-display);font-size:1rem}
+.badge{font-family:var(--f-mono);font-size:.66rem;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.badge.mvp{background:var(--accent);color:var(--on-solid)}
+.badge.f2{border:1px solid var(--line);color:var(--muted)}
+.mod p{font-size:.86rem;color:var(--muted)}
+.mod .rel{font-size:.78rem;color:var(--muted)}
+.mod .rel b{color:var(--ink);font-weight:500}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:18px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:grid;gap:10px;align-content:start}
+.box ul{margin:0;padding-left:18px}
+.box li{margin:4px 0;font-size:.92rem}
+
+/* aprobación */
+.approve{display:grid;gap:10px;counter-reset:q}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px}
+.q::before{counter-increment:q;content:counter(q);font-family:var(--f-mono);font-size:.8rem;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center}
+.q p{color:var(--muted);font-size:.9rem;margin-top:2px}
+footer{padding-block:28px 48px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+
+@media (max-width:900px){
+  .layers{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .org-areas{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mods{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dept-body{grid-template-columns:minmax(0,1fr)}
+  .dept-body > div + div{border-left:none;border-top:1px solid var(--line)}
+}
+@media (max-width:560px){
+  .layers,.mods,.two{grid-template-columns:minmax(0,1fr)}
+  .org-areas{grid-template-columns:minmax(0,1fr)}
+  .slate{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .slate div.cell:nth-child(3){border-right:none}
+  .need{grid-template-columns:minmax(0,1fr);gap:2px}
+  .phase-row{grid-template-columns:minmax(0,1fr);gap:0}
+  .dept-head,.dept-body > div{padding-left:16px;padding-right:16px}
+}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+<nav class="top" aria-label="Secciones">
+  <div class="wrap">
+    <span class="brand">PODCAST / ARQ</span>
+    <a href="#capas">Capas</a>
+    <a href="#organigrama">Organigrama</a>
+    <a href="#departamentos">Departamentos</a>
+    <a href="#matriz">Matriz × fases</a>
+    <a href="#flujo">Flujo y puertas</a>
+    <a href="#modulos">Sistema de gestión</a>
+    <a href="#gobernanza">Reuniones</a>
+    <a href="#escala">Escala</a>
+    <a href="#aprobar">Para aprobar</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="slate" aria-label="Datos del documento">
+      <div class="stripes"></div>
+      <div class="cell"><span>Producción</span><b>Podcast [nombre por definir]</b></div>
+      <div class="cell"><span>Documento</span><b>Arquitectura v0.2</b></div>
+      <div class="cell"><span>Fecha</span><b>2026-11-25</b></div>
+      <div class="cell"><span>Estado</span><b class="rec">● Para aprobación</b></div>
+    </div>
+    <h1>Arquitectura de producción del podcast</h1>
+    <p class="lede">Cómo se organiza la producción por áreas y departamentos, qué hace y qué necesita cada uno, cómo avanza un episodio desde la idea hasta las métricas, y qué módulos tendrá el sistema de gestión. Esta es la estructura que propongo construir; revisa cada parte y dame tu visto bueno o tus cambios.</p>
+    <div class="stats">
+      <div><b>6</b><span>áreas</span></div>
+      <div><b>11</b><span>departamentos</span></div>
+      <div><b>7</b><span>fases</span></div>
+      <div><b>49</b><span>tareas por episodio</span></div>
+      <div><b>7</b><span>puertas de aprobación</span></div>
+      <div><b>14</b><span>módulos de gestión</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="capas">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Vista general</span>
+      <h2>Cuatro capas que se apoyan una en otra</h2>
+      <p>La organización dice quién; el proceso dice qué y cuándo; el sistema guarda todo y avisa; la gobernanza decide y corrige.</p>
+    </div>
+    <div class="layers">
+      <div class="layer"><span class="n">Capa 1</span><h3>Organización</h3><p>6 áreas y 11 departamentos con misión, roles, necesidades, entregables y métricas propias.</p></div>
+      <div class="layer"><span class="n">Capa 2</span><h3>Proceso</h3><p>7 fases y 49 tareas por episodio, con fechas calculadas desde el día de grabación (G) y de publicación (P).</p></div>
+      <div class="layer"><span class="n">Capa 3</span><h3>Sistema de gestión</h3><p>14 módulos conectados: episodios, tareas, personas, invitados, presupuesto, inventario, métricas y más.</p></div>
+      <div class="layer"><span class="n">Capa 4</span><h3>Gobernanza</h3><p>7 puertas de aprobación, reuniones fijas, indicadores por departamento y revisión del proceso.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="organigrama">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 1 · Organización</span>
+      <h2>Organigrama por áreas</h2>
+      <p>La Dirección está arriba y las otras cinco áreas reportan a ella. Producción y Coordinación es el eje que conecta a todos los departamentos. Toca cualquier departamento para ver su ficha.</p>
+    </div>
+    <div class="org" id="org"></div>
+  </div>
+</section>
+
+<section id="departamentos">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 1 · Desglose</span>
+      <h2>Departamentos: qué hacen y qué necesitan</h2>
+      <p>Cada ficha tiene misión, roles, tareas por fase, necesidades (personas, equipo, software, espacio y presupuesto), entregables, indicadores y con quién se coordina. En equipos pequeños una persona cubre varios departamentos (ver <a href="#escala">Escala</a>).</p>
+    </div>
+    <div id="depts"></div>
+  </div>
+</section>
+
+<section id="matriz">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 1 × Capa 2</span>
+      <h2>Quién participa en cada fase</h2>
+      <p>Cruza los departamentos con las 7 fases del proceso. Sirve para saber a quién convocar en cada momento y quién responde por el resultado.</p>
+    </div>
+    <div class="scroll-x"><table class="mx" id="mx"></table></div>
+    <div class="legend">
+      <span><i class="cell-L">L</i> Lidera y responde por el resultado</span>
+      <span><i class="cell-P">P</i> Participa o aporta</span>
+      <span><i class="cell-I">I</i> Se le informa</span>
+    </div>
+  </div>
+</section>
+
+<section id="flujo">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 2 · Proceso</span>
+      <h2>Vida de un episodio: 11 estados y 7 puertas</h2>
+      <p>Cada episodio avanza por estados. Entre algunos estados hay una puerta (rombo rojo) que solo se cruza cuando se cumplen sus condiciones. El sistema no deja avanzar un episodio con una puerta pendiente.</p>
+    </div>
+    <div class="scroll-x"><div class="pipe" id="pipe"></div></div>
+    <div class="gates" id="gates"></div>
+  </div>
+</section>
+
+<section id="modulos">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 3 · Sistema de gestión</span>
+      <h2>Los módulos del sistema</h2>
+      <p>Cada módulo es una base de datos conectada con las demás. El núcleo es <b>Episodios</b>: casi todo lo demás cuelga de un episodio. Propongo construir primero los 7 módulos marcados como <span class="badge mvp">V1</span> y sumar el resto en una segunda etapa.</p>
+    </div>
+    <div class="mods" id="mods"></div>
+    <div class="two">
+      <div class="box">
+        <h4>Vistas principales</h4>
+        <ul>
+          <li><b>Tablero de episodios</b>: columnas por estado, para ver de un vistazo dónde está cada episodio.</li>
+          <li><b>Mis tareas</b>: lo que le toca a cada persona esta semana, ordenado por fecha.</li>
+          <li><b>Por departamento</b>: carga de trabajo y tareas vencidas por área.</li>
+          <li><b>Calendario</b>: grabaciones, publicaciones y reservas de estudio y equipo.</li>
+          <li><b>Semáforo</b>: episodios con puertas pendientes o tareas atrasadas.</li>
+          <li><b>Tablero de dirección</b>: indicadores, presupuesto contra gasto real y episodios en banco.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Automatizaciones</h4>
+        <ul>
+          <li>Al crear un episodio con su fecha G se generan las 49 tareas con responsable y fecha límite.</li>
+          <li>Si cambia la fecha de grabación, se recalculan todas las fechas.</li>
+          <li>Ningún episodio pasa a "Listo para grabar" sin la autorización firmada del invitado.</li>
+          <li>Avisos de tareas por vencer (24 h antes) y vencidas.</li>
+          <li>Al publicar, se crean los recordatorios de métricas a 7 y 30 días.</li>
+          <li>Alerta cuando el banco baja de 2 episodios grabados.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gobernanza">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 4 · Gobernanza</span>
+      <h2>Reuniones y momentos de decisión</h2>
+      <p>Pocas reuniones, cortas y con un resultado concreto. Lo que se decide queda registrado en el sistema.</p>
+    </div>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th>Reunión</th><th>Frecuencia</th><th>Duración</th><th>Asisten</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td><b>Junta editorial</b></td><td>Semanal</td><td class="mono">30–45 min</td><td>DIR, EDIT, PROD, MKT</td><td>Temas e invitados aprobados; calendario de 4 semanas</td></tr>
+          <tr><td><b>Junta de producción</b></td><td>Semanal</td><td class="mono">15–30 min</td><td>PROD y un responsable por departamento</td><td>Estado de cada episodio, bloqueos y responsables</td></tr>
+          <tr><td><b>Revisión de corte</b></td><td>Por episodio</td><td class="mono">≈ duración del episodio</td><td>EDIT (host), POST, DIR</td><td>Corte aprobado o lista de cambios con tiempos</td></tr>
+          <tr><td><b>Reporte de métricas</b></td><td>Semanal</td><td class="mono">Asíncrono</td><td>DATA para todos</td><td>Tablero actualizado y 3 hallazgos</td></tr>
+          <tr><td><b>Retro del proceso</b></td><td>Mensual</td><td class="mono">45 min</td><td>Todos</td><td>Cambios a la matriz y al sistema</td></tr>
+          <tr><td><b>Revisión de temporada</b></td><td>Por temporada</td><td class="mono">2 h</td><td>DIR y responsables</td><td>Metas, formato y presupuesto de la siguiente temporada</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="escala">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Capa 1 · Tamaño del equipo</span>
+      <h2>Los mismos 11 departamentos con cualquier tamaño de equipo</h2>
+      <p>Los departamentos no desaparecen cuando el equipo es chico: se agrupan en menos personas. Así el sistema funciona igual con 2 que con 15.</p>
+    </div>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th>Equipo</th><th>Persona / puesto</th><th>Departamentos que cubre</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3"><b>3 personas</b></td><td>Host y dirección</td><td class="mono">DIR · EDIT</td></tr>
+          <tr><td>Producción y negocio</td><td class="mono">PROD · MKT · DATA · COM · ADM</td></tr>
+          <tr><td>Técnica y edición</td><td class="mono">SON · VID · POST · DIS</td></tr>
+          <tr><td rowspan="6"><b>6 personas</b></td><td>Productor/a ejecutivo/a</td><td class="mono">DIR · COM</td></tr>
+          <tr><td>Host + investigación</td><td class="mono">EDIT</td></tr>
+          <tr><td>Productor/a</td><td class="mono">PROD · ADM</td></tr>
+          <tr><td>Técnico/a</td><td class="mono">SON · VID</td></tr>
+          <tr><td>Editor/a</td><td class="mono">POST</td></tr>
+          <tr><td>Diseño y redes</td><td class="mono">DIS · MKT · DATA</td></tr>
+          <tr><td><b>11 o más</b></td><td>Un responsable por departamento</td><td>Todos por separado; se suma un coordinador/a de postproducción</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="aprobar">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Tu visto bueno</span>
+      <h2>Lo que necesito que apruebes o cambies</h2>
+      <p>Respóndeme en el chat por número. Con eso construyo el sistema de gestión sobre esta estructura.</p>
+    </div>
+    <div class="approve">
+      <div class="q"><div><b>Áreas y departamentos.</b><p>¿Te sirven las 6 áreas y los 11 departamentos? ¿Quieres fusionar, quitar o agregar alguno? Por ejemplo, Comercial puede salir si no vas a monetizar todavía.</p></div></div>
+      <div class="q"><div><b>Publicación dentro de Marketing.</b><p>En la v0.1 publicar era tarea de Producción. Aquí la pasé a Distribución y Marketing, y Producción solo verifica. ¿De acuerdo?</p></div></div>
+      <div class="q"><div><b>Flujo de 11 estados y 7 puertas.</b><p>¿Agregarías o quitarías alguna aprobación? Por ejemplo, que el invitado apruebe el corte antes de publicar.</p></div></div>
+      <div class="q"><div><b>Módulos de la primera versión.</b><p>Propongo empezar con Episodios, Tareas, Personas, Invitados, Banco de temas, Calendario y Presupuesto. ¿Cambiarías alguno?</p></div></div>
+      <div class="q"><div><b>Dónde vive el sistema.</b><p>Opciones: Notion, Airtable, Google Sheets o una aplicación web a la medida. Depende de quién lo va a usar y desde qué dispositivo.</p></div></div>
+      <div class="q"><div><b>Reuniones.</b><p>¿Te sirven la junta editorial y la de producción cada semana, o prefieres juntarlas en una sola?</p></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Arquitectura v0.2 · Basada en el sistema v0.1 del repositorio (matriz, fases, anexos y plantillas). Después de tu visto bueno se actualizan MATRIZ.md, el CSV de tareas y la RACI con estos departamentos.</div>
+</footer>
+
+<script>
+const AREAS = [
+  {id:"dir",  n:"Dirección",               c:"--a1", d:"Visión, decisiones finales y presupuesto"},
+  {id:"cont", n:"Contenido",               c:"--a2", d:"Qué se dice y por qué importa"},
+  {id:"prod", n:"Producción y Técnica",    c:"--a3", d:"Coordinación, grabación de audio y video"},
+  {id:"post", n:"Postproducción y Diseño", c:"--a4", d:"Edición, piezas finales e identidad visual"},
+  {id:"aud",  n:"Audiencia y Negocio",     c:"--a5", d:"Publicación, crecimiento, datos e ingresos"},
+  {id:"adm",  n:"Administración y Legal",  c:"--a6", d:"Dinero, contratos y derechos"}
+];
+const PH = ["F0","F1","F2","F3","F4","F5","F6"];
+const PHN = {F0:"Desarrollo",F1:"Preproducción",F2:"Producción",F3:"Postproducción",F4:"Distribución",F5:"Promoción",F6:"Medición"};
+
+const DEPTS = [
+ {code:"DIR", area:"dir", n:"Dirección y Producción Ejecutiva",
+  m:"Define la visión del show, toma las decisiones finales y responde por el presupuesto, la calidad y los resultados.",
+  roles:["Productor/a ejecutivo/a (showrunner)"],
+  t:{F0:"Aprueba el concepto, la biblia del show, las metas y el presupuesto de la temporada.",F1:"Aprueba temas e invitados (puerta 1).",F3:"Aprueba el corte final (puerta 4).",F6:"Revisa resultados mensuales y de temporada y decide ajustes."},
+  need:{Personas:"1 persona, 4–6 h por semana",Software:"Tablero de dirección del sistema",Presupuesto:"Define y controla el presupuesto total"},
+  ent:["Biblia del show aprobada","Plan y metas de temporada","Presupuesto aprobado","Registro de decisiones"],
+  kpi:["Crecimiento de audiencia contra la meta","Gasto real contra presupuesto","% de episodios publicados a tiempo"],
+  rec:"Reportes de todos los departamentos", ent2:"Aprobaciones y prioridades para todos",
+  mx:["L","P","I","P","I","I","P"]},
+ {code:"EDIT", area:"cont", n:"Contenido y Editorial",
+  m:"Decide qué se dice, cómo se dice y por qué le importa a la audiencia.",
+  roles:["Host(s) o conductores","Investigador/a","Guionista o editor/a de contenido"],
+  t:{F0:"Define formato, segmentos, tono y el banco inicial de temas.",F1:"Propone temas, investiga, verifica datos, escribe la escaleta y prepara al host.",F2:"Conduce la conversación.",F3:"Hace el corte editorial y revisa el contenido (puerta 4).",F4:"Escribe títulos, descripción y notas del episodio.",F5:"Propone momentos para clips y sus textos.",F6:"Usa la retención para ajustar formato y temas."},
+  need:{Personas:"Host + 1 investigador/a (3–6 h por episodio)",Software:"Documentos compartidos, banco de temas, acceso a fuentes",Presupuesto:"Suscripciones a medios y bases de datos"},
+  ent:["Banco de temas","Dossier de investigación","Escaleta o guion","Títulos y notas del episodio"],
+  kpi:["Retención promedio por episodio","Banco de temas de al menos 2× los episodios pendientes","Errores de datos publicados (meta: 0)"],
+  rec:"Métricas de DATA; prioridades de DIR", ent2:"Escaleta a PROD y técnica; corte a POST; textos a MKT",
+  mx:["L","L","L","P","P","P","P"]},
+ {code:"PROD", area:"prod", n:"Producción y Coordinación",
+  m:"Hace que todo pase a tiempo. Es dueño del calendario, del proceso y del sistema de gestión.",
+  roles:["Productor/a (jefe/a de producción)","Asistente de producción","Booker de invitados"],
+  t:{F0:"Configura el sistema, el calendario y las plantillas; coordina el episodio piloto.",F1:"Contacta y confirma invitados, gestiona autorizaciones, reserva estudio y equipo, envía la hoja de llamado (puerta 2).",F2:"Coordina el set, recibe al invitado, lleva la bitácora y verifica el respaldo (puerta 3).",F3:"Coordina revisiones y hace el control de calidad (puerta 5).",F4:"Verifica que el episodio quedó publicado y funciona en cada plataforma.",F6:"Mide los tiempos reales de cada fase y ajusta el proceso."},
+  need:{Personas:"1 productor/a; + 1 asistente si hay video cada semana",Equipo:"Teléfono y laptop de producción",Software:"Sistema de gestión, calendario compartido, firma electrónica, mensajería",Presupuesto:"Logística: transporte de invitados, alimentos en set, imprevistos"},
+  ent:["Calendario de producción","Hoja de llamado","Bitácora de grabación","Control de calidad firmado","Ficha de episodio al día"],
+  kpi:["% de episodios a tiempo","Días entre grabación y publicación","Cancelaciones de invitados","Tareas vencidas"],
+  rec:"Prioridades de DIR; escaleta de EDIT", ent2:"Agenda y logística a todos; brutos a POST",
+  mx:["P","L","L","P","P","I","P"]},
+ {code:"SON", area:"prod", n:"Audio",
+  m:"Garantiza que cada voz se escuche limpia y que nunca se pierda una grabación.",
+  roles:["Ingeniero/a o técnico/a de sonido"],
+  t:{F0:"Diseña la cadena de audio y el tratamiento acústico del set.",F1:"Revisa el equipo y hace la prueba técnica con invitados remotos.",F2:"Monta micrófonos, fija niveles, graba cada voz en su pista con respaldo y escucha todo el tiempo.",F3:"Resuelve dudas técnicas sobre los brutos."},
+  need:{Personas:"1 técnico/a por sesión",Equipo:"Micrófonos dinámicos, brazos, interfaz o grabadora multipista, grabadora de respaldo, audífonos, cables, paneles acústicos",Software:"Plataforma de grabación remota (Riverside, Zencastr)",Espacio:"Sala con tratamiento acústico"},
+  ent:["Pistas WAV 48 kHz / 24 bit por persona","Respaldo de audio","Reporte de incidencias"],
+  kpi:["Incidencias de audio por sesión (meta: 0)","Sesiones repetidas por fallas"],
+  rec:"Hoja de llamado de PROD", ent2:"Pistas a POST",
+  mx:["P","P","L","I","","",""]},
+ {code:"VID", area:"prod", n:"Video y Realización", opt:"Solo si hay video",
+  m:"Diseña cómo se ve el show y graba cada ángulo listo para editar.",
+  roles:["Realizador/a o director/a de cámaras","Camarógrafo/a","Iluminador/a"],
+  t:{F0:"Diseña el set, los planos de cámara y la iluminación; hace la prueba de cámara.",F1:"Revisa equipo, carga baterías y formatea tarjetas.",F2:"Monta cámaras y luces; graba cada cámara por separado, extras y foto fija.",F3:"Resuelve dudas sobre el material."},
+  need:{Personas:"1–2 por sesión según el número de cámaras",Equipo:"2–3 cámaras, lentes, trípodes, 3–4 luces, tarjetas y baterías; switcher en nivel estudio",Espacio:"Set con escenografía y control de luz",Presupuesto:"Mantenimiento y renta de equipo"},
+  ent:["Brutos por cámara","Fotos del episodio","Video vertical grabado en set"],
+  kpi:["Incidencias de video por sesión","Tiempo de montaje"],
+  rec:"Hoja de llamado de PROD", ent2:"Brutos a POST; fotos a DIS y MKT",
+  mx:["P","P","L","I","","",""]},
+ {code:"POST", area:"post", n:"Postproducción",
+  m:"Convierte los brutos en el episodio final y en todas sus piezas derivadas.",
+  roles:["Editor/a de audio","Editor/a de video","Coordinador/a de post (equipos grandes)"],
+  t:{F0:"Crea plantillas de proyecto, la cadena de audio y los ajustes de exportación.",F2:"Recibe y organiza los brutos.",F3:"Sincroniza, transcribe, corta, limpia, mezcla, masteriza a −16 LUFS, edita video, subtítulos y clips.",F4:"Exporta los archivos de cada plataforma y los capítulos.",F5:"Produce clips verticales adicionales."},
+  need:{Personas:"1 editor/a de audio + 1 de video (8–15 h por episodio con video)",Equipo:"Computadora de edición (32 GB RAM o más, buena GPU), monitores y audífonos de referencia, discos SSD o NAS",Software:"DAW, Premiere o Resolve, iZotope RX, Descript, Auphonic, plataforma de revisión",Presupuesto:"Licencias de software y almacenamiento en nube"},
+  ent:["Máster WAV y MP3","Video 16:9","Clips 9:16","Subtítulos SRT","Transcripción","Capítulos"],
+  kpi:["Horas de edición por episodio","Rondas de cambios","% de episodios que pasan el control de calidad a la primera"],
+  rec:"Brutos de SON y VID; escaleta y bitácora", ent2:"Archivos finales a MKT; gráficos pedidos a DIS",
+  mx:["P","I","P","L","P","P",""]},
+ {code:"DIS", area:"post", n:"Diseño y Marca",
+  m:"Crea y cuida la identidad visual en cada pieza del show.",
+  roles:["Diseñador/a gráfico/a","Motion designer (opcional)"],
+  t:{F0:"Crea logo, portada del show, kit de marca y plantillas.",F1:"Prepara los gráficos que irán en pantalla.",F3:"Entrega nombres en pantalla y animaciones para el video.",F4:"Diseña la portada del episodio y la miniatura de YouTube.",F5:"Diseña piezas para redes y el kit del invitado."},
+  need:{Personas:"1 diseñador/a (2–4 h por episodio)",Software:"Figma o Adobe, banco de imágenes, tipografías con licencia",Presupuesto:"Sesión de fotos del host, licencias"},
+  ent:["Kit de marca","Portada 3000×3000","Miniatura 1280×720","Gráficos y plantillas"],
+  kpi:["% de clics en miniaturas de YouTube","Entregas a tiempo"],
+  rec:"Guía de marca de DIR; pedidos de POST y MKT", ent2:"Gráficos a POST; piezas a MKT",
+  mx:["L","P","","P","P","P",""]},
+ {code:"MKT", area:"aud", n:"Distribución y Marketing",
+  m:"Lleva cada episodio a su audiencia y hace crecer la comunidad.",
+  roles:["Responsable de publicación","Community manager","Estratega de crecimiento"],
+  t:{F0:"Abre cuentas y el feed; define la estrategia de lanzamiento y los canales.",F2:"Graba contenido detrás de cámaras.",F3:"Elige los clips junto con POST.",F4:"Sube y programa en el hosting y en YouTube, con metadatos y SEO (puerta 6).",F5:"Ejecuta el calendario de redes, la newsletter, la comunidad y el kit del invitado.",F6:"Analiza con DATA qué piezas funcionan."},
+  need:{Personas:"1 community manager (3–6 h por episodio)",Software:"Hosting de podcast, YouTube Studio, programador de redes, herramienta de newsletter",Presupuesto:"Pauta pagada (opcional) y herramientas"},
+  ent:["Episodio publicado en todas las plataformas","Calendario de redes","Kit del invitado","Newsletter"],
+  kpi:["Seguidores nuevos","Alcance de clips","Clics del clip al episodio"],
+  rec:"Archivos de POST; piezas de DIS; textos de EDIT", ent2:"Enlaces y resultados a DATA y PROD",
+  mx:["P","I","P","P","L","L","P"]},
+ {code:"DATA", area:"aud", n:"Datos y Análisis", opt:"Puede vivir dentro de MKT",
+  m:"Convierte las cifras de cada plataforma en decisiones.",
+  roles:["Analista"],
+  t:{F0:"Define metas e indicadores con DIR y arma el tablero.",F5:"Vigila el rendimiento de los clips en las primeras 48 h.",F6:"Registra métricas a 7 y 30 días, analiza la retención y reporta (puerta 7)."},
+  need:{Personas:"1–2 h por episodio",Software:"Accesos a estadísticas del hosting, Spotify, Apple, YouTube y redes; hoja o tablero"},
+  ent:["Tablero de métricas","Reporte mensual","Cifras para el media kit"],
+  kpi:["Reportes entregados a tiempo"],
+  rec:"Enlaces de MKT", ent2:"Hallazgos a EDIT, DIR y COM",
+  mx:["P","","","","I","P","L"]},
+ {code:"COM", area:"aud", n:"Comercial y Alianzas", opt:"Solo si se monetiza",
+  m:"Genera ingresos y alianzas sin perder la confianza de la audiencia.",
+  roles:["Ejecutivo/a comercial","Account manager"],
+  t:{F0:"Define el modelo de ingresos, las tarifas y el media kit.",F1:"Integra las menciones de patrocinio en la escaleta.",F3:"Verifica que las menciones cumplan el contrato.",F4:"Asegura que el patrocinio se declare en audio y descripción.",F5:"Entrega al patrocinador las piezas acordadas.",F6:"Entrega reportes a patrocinadores y gestiona renovaciones."},
+  need:{Personas:"Medio tiempo o por comisión",Software:"CRM de prospectos; plantillas de propuesta y contrato"},
+  ent:["Media kit","Propuestas comerciales","Contratos","Reportes de campaña"],
+  kpi:["Ingreso por episodio","Tasa de renovación de patrocinadores"],
+  rec:"Cifras de DATA; calendario de PROD", ent2:"Menciones a EDIT; contratos a ADM",
+  mx:["P","P","I","P","P","P","P"]},
+ {code:"ADM", area:"adm", n:"Administración, Finanzas y Legal",
+  m:"Mantiene en orden el dinero, los contratos y los derechos.",
+  roles:["Administrador/a","Contador/a (externo)","Abogado/a (externo)"],
+  t:{F0:"Arma el presupuesto, registra la marca, prepara plantillas legales y asegura el equipo.",F1:"Archiva las autorizaciones, contrata freelancers y paga reservas.",F2:"Lleva el control del inventario de equipo.",F3:"Archiva las licencias de la música usada.",F6:"Compara gasto real contra presupuesto; pagos y facturación."},
+  need:{Personas:"2–4 h por semana + asesores externos",Software:"Control de presupuesto, firma electrónica, carpeta legal",Presupuesto:"Honorarios de contador y abogado, registro de marca, seguros"},
+  ent:["Presupuesto y reporte de gastos","Autorizaciones y contratos archivados","Inventario de activos"],
+  kpi:["% de autorizaciones firmadas antes de grabar (meta: 100 %)","Desviación del presupuesto"],
+  rec:"Contratos de COM; pedidos de PROD", ent2:"Pagos, contratos y reportes a DIR",
+  mx:["P","P","I","I","","","P"]}
+];
+
+const STATES = [
+ {k:"E01",n:"Idea",d:"En el banco de temas",g:null},
+ {k:"E02",n:"Aprobado",d:"Tema e invitado aprobados",g:"P1"},
+ {k:"E03",n:"En preproducción",d:"Investigación, escaleta, logística",g:null},
+ {k:"E04",n:"Listo para grabar",d:"Todo confirmado",g:"P2"},
+ {k:"E05",n:"Grabado",d:"Brutos respaldados",g:"P3"},
+ {k:"E06",n:"En edición",d:"Corte, mezcla, video",g:null},
+ {k:"E07",n:"En revisión",d:"Corte final y control de calidad",g:"P4"},
+ {k:"E08",n:"Aprobado final",d:"Listo para salir",g:"P5"},
+ {k:"E09",n:"Programado",d:"Cargado con fecha y hora",g:null},
+ {k:"E10",n:"Publicado",d:"Visible en todas las plataformas",g:"P6"},
+ {k:"E11",n:"Cerrado",d:"Métricas y retro hechas",g:"P7"}
+];
+const GATES = [
+ {k:"P1",n:"Tema aprobado",who:"DIR",d:"Ángulo claro, invitado viable y lugar en el calendario."},
+ {k:"P2",n:"Listo para grabar",who:"PROD",d:"Invitado confirmado, autorización firmada, escaleta aprobada, estudio y equipo reservados, prueba técnica hecha."},
+ {k:"P3",n:"Respaldo verificado",who:"PROD · SON",d:"Tres copias de todos los brutos verificadas antes de formatear tarjetas."},
+ {k:"P4",n:"Corte aprobado",who:"EDIT · DIR",d:"El host y Dirección aprueban el contenido; pasan las 3 preguntas imprescindibles."},
+ {k:"P5",n:"Control de calidad",who:"PROD",d:"Checklist completo: −16 LUFS, sincronía, subtítulos, metadatos y patrocinios declarados."},
+ {k:"P6",n:"Publicación verificada",who:"MKT · PROD",d:"El episodio aparece y se reproduce en Spotify, Apple y YouTube; enlaces guardados."},
+ {k:"P7",n:"Cierre",who:"DATA",d:"Métricas a 30 días registradas y retro con acciones asignadas."}
+];
+const MODS = [
+ {n:"Episodios",v:1,core:1,d:"Ficha de cada episodio: código T01E03, estado, fechas G y P, invitado, host, enlaces finales.",r:"Tareas, Invitados, Temas, Presupuesto, Métricas, Archivos"},
+ {n:"Tareas",v:1,core:1,d:"Las 49 tareas por episodio con fase, departamento, responsable, fecha límite y bloqueos.",r:"Episodios, Personas"},
+ {n:"Personas y equipo",v:1,d:"Quién es quién: rol, departamento, contacto, disponibilidad y tarifa.",r:"Tareas, Calendario, Presupuesto"},
+ {n:"Invitados",v:1,d:"Directorio de invitados: estado del contacto, temas, redes, autorización firmada, kit enviado.",r:"Episodios, Contratos"},
+ {n:"Banco de temas",v:1,d:"Ideas con ángulo, prioridad y estado; de aquí nacen los episodios.",r:"Episodios, Invitados"},
+ {n:"Calendario",v:1,d:"Vista de grabaciones, publicaciones y reservas, armada desde los demás módulos.",r:"Episodios, Locaciones, Inventario"},
+ {n:"Presupuesto y gastos",v:1,d:"Partidas por departamento y episodio; gasto real, proveedor y estado de pago.",r:"Episodios, Proveedores, Personas"},
+ {n:"Inventario de equipo",v:2,d:"Cada pieza de equipo: estado, ubicación, responsable y reservas.",r:"Calendario, Presupuesto"},
+ {n:"Locaciones y estudios",v:2,d:"Espacios propios o rentados, contacto, costo y reservas.",r:"Calendario, Presupuesto"},
+ {n:"Archivos y entregables",v:2,d:"Enlaces a carpetas, versiones y aprobación de cada pieza.",r:"Episodios, Tareas"},
+ {n:"Contratos y legal",v:2,d:"Autorizaciones, licencias de música y contratos, con fechas de vencimiento.",r:"Invitados, Patrocinios, Proveedores"},
+ {n:"Patrocinios",v:2,d:"Prospectos, campañas, menciones comprometidas y reportes.",r:"Episodios, Contratos, Métricas"},
+ {n:"Métricas",v:2,d:"Cifras a 7 y 30 días por episodio y por clip.",r:"Episodios, Patrocinios"},
+ {n:"Proveedores",v:2,d:"Freelancers y empresas de renta: servicio, tarifa y evaluación.",r:"Presupuesto, Contratos"}
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const areaOf = id => AREAS.find(a => a.id === id);
+const color = a => `var(${a.c})`;
+
+// Organigrama
+(function(){
+  const org = document.getElementById("org");
+  const dir = DEPTS.find(d => d.code === "DIR"), a1 = areaOf("dir");
+  let h = `<div class="org-top"><a class="org-node" href="#d-DIR" style="min-width:240px;border-color:${color(a1)}"><span class="code" style="color:${color(a1)}">DIR</span><span class="nm">${esc(dir.n)}</span></a></div><div class="org-line"></div><div class="org-areas">`;
+  AREAS.filter(a => a.id !== "dir").forEach(a => {
+    h += `<div class="org-area"><div class="ah" style="color:${color(a)}">${esc(a.n)}</div>`;
+    DEPTS.filter(d => d.area === a.id).forEach(d => {
+      h += `<a class="org-node" href="#d-${d.code}"><span class="code" style="color:${color(a)}">${d.code}</span><span class="nm">${esc(d.n)}</span></a>`;
+    });
+    h += `</div>`;
+  });
+  org.innerHTML = h + `</div>`;
+})();
+
+// Fichas de departamentos
+(function(){
+  let h = "";
+  AREAS.forEach(a => {
+    const ds = DEPTS.filter(d => d.area === a.id);
+    h += `<div class="area-band"><div class="area-title"><span class="dot" style="background:${color(a)}"></span><h3>${esc(a.n)}</h3><small>${esc(a.d)}</small></div>`;
+    ds.forEach(d => {
+      const phases = PH.filter(p => d.t[p]).map(p => `<div class="phase-row"><span class="ph">${p} ${PHN[p].slice(0,6)}.</span><span>${esc(d.t[p])}</span></div>`).join("");
+      const needs = Object.entries(d.need).map(([k,v]) => `<div class="need"><span>${esc(k)}</span><div>${esc(v)}</div></div>`).join("");
+      h += `<article class="dept" id="d-${d.code}">
+        <div class="dept-head"><span class="chip" style="background:${color(a)}">${d.code}</span>
+          <div class="t"><h3>${esc(d.n)}</h3><p>${esc(d.m)}</p></div>
+          ${d.opt ? `<span class="tag-opt">${esc(d.opt)}</span>` : ""}
+        </div>
+        <div class="dept-body">
+          <div>
+            <div class="blk"><h4>Roles</h4><div class="pill-list">${d.roles.map(r => `<span class="pill">${esc(r)}</span>`).join("")}</div></div>
+            <div class="blk"><h4>Tareas por fase</h4><div class="phase-list">${phases}</div></div>
+            <div class="blk"><h4>Entregables</h4><ul>${d.ent.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+          </div>
+          <div>
+            <div class="blk"><h4>Necesidades</h4><div class="needs">${needs}</div></div>
+            <div class="blk"><h4>Indicadores</h4><ul>${d.kpi.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+            <div class="blk"><h4>Coordinación</h4><p class="flow"><b>Recibe:</b> ${esc(d.rec)}</p><p class="flow"><b>Entrega:</b> ${esc(d.ent2)}</p></div>
+          </div>
+        </div>
+      </article>`;
+    });
+    h += `</div>`;
+  });
+  document.getElementById("depts").innerHTML = h;
+})();
+
+// Matriz
+(function(){
+  let h = `<thead><tr><th>Departamento</th>${PH.map(p => `<th class="c">${p}<br>${PHN[p]}</th>`).join("")}</tr></thead><tbody>`;
+  DEPTS.forEach(d => {
+    const a = areaOf(d.area);
+    h += `<tr><td class="dn"><span class="chip" style="background:${color(a)};margin-right:8px">${d.code}</span>${esc(d.n)}</td>`;
+    d.mx.forEach(v => { h += `<td class="c">${v ? `<i class="cell-${v}">${v}</i>` : ""}</td>`; });
+    h += `</tr>`;
+  });
+  document.getElementById("mx").innerHTML = h + `</tbody>`;
+})();
+
+// Flujo
+(function(){
+  let h = "";
+  STATES.forEach((s,i) => {
+    if (i > 0) h += `<div class="gap">${s.g ? `<span class="gate" title="Puerta ${s.g}"><i>${s.g}</i></span>` : ""}</div>`;
+    h += `<div class="st"><span class="k">${s.k}</span><b>${esc(s.n)}</b><small>${esc(s.d)}</small></div>`;
+  });
+  document.getElementById("pipe").innerHTML = h;
+  document.getElementById("gates").innerHTML = GATES.map(g =>
+    `<div class="gcard"><span class="gate"><i>${g.k.slice(1)}</i></span><div><b>${g.k} · ${esc(g.n)}</b> <span class="mono" style="font-size:.72rem;color:var(--muted)">aprueba ${esc(g.who)}</span><p>${esc(g.d)}</p></div></div>`).join("");
+})();
+
+// Módulos
+document.getElementById("mods").innerHTML = MODS.map(m =>
+  `<div class="mod${m.core ? " core" : ""}"><div class="mod-h"><b>${esc(m.n)}</b><span class="badge ${m.v === 1 ? "mvp" : "f2"}">${m.v === 1 ? "V1" : "Etapa 2"}</span></div><p>${esc(m.d)}</p><div class="rel"><b>Se conecta con:</b> ${esc(m.r)}</div></div>`).join("");
+</script>
