@@ -16,6 +16,7 @@ cuántas personas y cuánto tiempo por episodio. Se llenan una vez y se revisan 
 | D9 | **Presupuesto** | Equipo inicial + costo mensual recurrente | Ver `anexos/equipo-tecnico.md`. | [POR DEFINIR] |
 | D10 | **Monetización** | Ninguna · Patrocinio · Membresías · Marca propia/B2B | Patrocinio añade lecturas de anuncio, contratos y reportes. Ojo: YouTube vía RSS no admite anuncios en el contenido subido. | [POR DEFINIR] |
 | D11 | **Idioma / mercado** | País y audiencia objetivo | Afecta horarios, legal, plataformas dominantes. | [POR DEFINIR] |
+| D0 | **Sistema de gestión** | Airtable · Notion · Sheets · A la medida | Define cómo opera el equipo. | **A la medida** (ver `docs/plan-tecnico.md`) |
 | D12 | **Hosting / RSS** | Spotify for Creators · Buzzsprout · Captivate · Transistor · RSS.com · Libsyn, etc. | Define estadísticas, distribución a Apple/YouTube y soporte de video. | [POR DEFINIR] |
 
 ## Horas estimadas por episodio (orientativo)
