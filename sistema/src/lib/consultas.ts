@@ -17,9 +17,9 @@ export type TareaFila = {
 };
 
 /** Tareas de los proyectos indicados que la persona puede ver. */
-export async function tareasVisibles(ctx: Contexto, proyectoIds: number[], opciones: { soloAbiertas?: boolean } = {}): Promise<TareaFila[]> {
+export async function tareasVisibles(ctx: Contexto, proyectoIds: number[], opciones: { soloAbiertas?: boolean; unidadId?: number } = {}): Promise<TareaFila[]> {
   if (!proyectoIds.length) return [];
-  const filas = await db.select({
+  const [filas, cubiertos] = await Promise.all([db.select({
     id: tareas.id, codigo: tareas.codigo, fase: tareas.fase, nombre: tareas.nombre, rolesHace: tareas.rolesHace,
     rolAprueba: tareas.rolAprueba, fechaLimite: tareas.fechaLimite, estado: tareas.estado, notaBloqueo: tareas.notaBloqueo,
     referencia: tareas.referencia, desfase: tareas.desfase, orden: tareas.orden,
@@ -28,10 +28,13 @@ export async function tareasVisibles(ctx: Contexto, proyectoIds: number[], opcio
   }).from(tareas)
     .innerJoin(unidades, eq(tareas.unidadId, unidades.id))
     .innerJoin(proyectos, eq(unidades.proyectoId, proyectos.id))
-    .where(and(inArray(proyectos.id, proyectoIds), opciones.soloAbiertas ? ne(tareas.estado, "done") : undefined))
-    .orderBy(asc(tareas.fechaLimite), asc(unidades.codigo), asc(tareas.orden));
+    .where(and(
+      inArray(proyectos.id, proyectoIds),
+      opciones.soloAbiertas ? ne(tareas.estado, "done") : undefined,
+      opciones.unidadId ? eq(tareas.unidadId, opciones.unidadId) : undefined,
+    ))
+    .orderBy(asc(tareas.fechaLimite), asc(unidades.codigo), asc(tareas.orden)), rolesCubiertos(proyectoIds)]);
 
-  const cubiertos = await rolesCubiertos(proyectoIds);
   return filas
     .filter((t) => veTarea(ctx, t.proyectoId, t))
     .map((t) => ({

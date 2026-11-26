@@ -3,7 +3,7 @@ import { requierePersona, proyectosEnFoco } from "@/lib/sesion";
 import { esAprobacionMia, esPendienteMio, puertasDe, tareasVisibles, unidadesDe, estadosPlantilla } from "@/lib/consultas";
 import { hoyCDMX, sumarDias } from "@/lib/fechas";
 import { puedeAprobarPuerta, rolesEn } from "@/lib/acceso";
-import { requisitosPendientes } from "@/lib/produccion";
+import { faltantes, tareasHechas } from "@/lib/produccion";
 import { TablaTareas } from "@/components/tareas";
 import { Rol } from "@/components/ui";
 
@@ -15,7 +15,7 @@ export default async function Pendientes() {
   const ids = proyectos.map((p) => p.id);
   const hoy = hoyCDMX();
   const en7 = sumarDias(hoy, 7);
-  const tareas = await tareasVisibles(ctx, ids);
+  const [tareas, unidades, estados] = await Promise.all([tareasVisibles(ctx, ids), unidadesDe(ids), estadosPlantilla("podcast-v1")]);
   const mias = tareas.filter(esPendienteMio);
   const vencidas = mias.filter((t) => t.fechaLimite && t.fechaLimite < hoy);
   const semana = mias.filter((t) => t.fechaLimite && t.fechaLimite >= hoy && t.fechaLimite <= en7);
@@ -23,9 +23,7 @@ export default async function Pendientes() {
   const aprobar = tareas.filter(esAprobacionMia);
 
   // Puertas: la siguiente de cada episodio, si me toca aprobarla.
-  const unidades = await unidadesDe(ids);
-  const puertas = await puertasDe(unidades.map((u) => u.id));
-  const estados = await estadosPlantilla("podcast-v1");
+  const [puertas, hechas] = await Promise.all([puertasDe(unidades.map((u) => u.id)), tareasHechas(unidades.map((u) => u.id))]);
   const misPuertas = [];
   for (const u of unidades) {
     const sig = estados[estados.findIndex((e) => e.codigo === u.estado) + 1];
@@ -33,7 +31,7 @@ export default async function Pendientes() {
     if (!p || p.aprobada) continue;
     const directo = rolesEn(ctx, u.proyectoId).has(p.rolAprueba);
     if (!directo && !(puedeAprobarPuerta(ctx, u.proyectoId, p.rolAprueba) && rolesEn(ctx, u.proyectoId).has("PR"))) continue;
-    misPuertas.push({ u, p, faltan: await requisitosPendientes(u.id, p.requisitos) });
+    misPuertas.push({ u, p, faltan: faltantes(p.requisitos, hechas.get(u.id)) });
   }
 
   const misRoles = proyectos.map((p) => ({ p, roles: [...rolesEn(ctx, p.id)] })).filter((x) => x.roles.length);

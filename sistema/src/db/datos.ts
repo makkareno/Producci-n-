@@ -1,6 +1,8 @@
-/* Datos base del sistema: catálogo y proyecto de demostración. Los usan el script de carga y el modo demostración. */
+/* Datos base del sistema: catálogo y proyecto de demostración. Los usan el script de carga y el modo demostración.
+   Todo se escribe en bloque (una sentencia por tabla) para que preparar la demo tarde lo mínimo. */
 import { randomBytes } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, sql, type SQL } from "drizzle-orm";
+import type { PgTable } from "drizzle-orm/pg-core";
 import { db, schema } from "./index";
 import {
   AREAS, DEPARTAMENTOS, ROLES, FORMATOS, PLANTILLA_PODCAST, FASES, ESTADOS, PUERTAS, TAREAS_PODCAST,
@@ -10,33 +12,31 @@ import { hoyCDMX, sumarDias } from "../lib/fechas";
 
 const s = schema;
 
-export async function catalogo() {
-  for (const a of AREAS) await db.insert(s.areas).values(a).onConflictDoUpdate({ target: s.areas.id, set: a });
-  for (const d of DEPARTAMENTOS) await db.insert(s.departamentos).values(d).onConflictDoUpdate({ target: s.departamentos.codigo, set: d });
-  for (const [i, r] of ROLES.entries()) {
-    const v = { ...r, responsable: !!r.responsable, orden: i + 1 };
-    await db.insert(s.roles).values(v).onConflictDoUpdate({ target: s.roles.codigo, set: v });
+/** SET de un upsert: toma cada columna del valor nuevo (excluded), salvo la clave. */
+function nuevos(tabla: PgTable, excepto: string[]): Record<string, SQL> {
+  const set: Record<string, SQL> = {};
+  for (const [k, c] of Object.entries(getTableColumns(tabla))) {
+    if (!excepto.includes(k) && k !== "id") set[k] = sql.raw(`excluded."${c.name}"`);
   }
-  for (const f of FORMATOS) await db.insert(s.formatos).values(f).onConflictDoUpdate({ target: s.formatos.id, set: f });
+  return set;
+}
 
+export async function catalogo() {
   const p = PLANTILLA_PODCAST;
-  await db.insert(s.plantillas).values(p).onConflictDoUpdate({ target: s.plantillas.id, set: p });
-  for (const f of FASES) {
-    const v = { plantillaId: p.id, ...f };
-    await db.insert(s.plantillaFases).values(v).onConflictDoUpdate({ target: [s.plantillaFases.plantillaId, s.plantillaFases.codigo], set: v });
-  }
-  for (const [i, e] of ESTADOS.entries()) {
-    const v = { plantillaId: p.id, ...e, orden: i + 1 };
-    await db.insert(s.plantillaEstados).values(v).onConflictDoUpdate({ target: [s.plantillaEstados.plantillaId, s.plantillaEstados.codigo], set: v });
-  }
-  for (const pu of PUERTAS) {
-    const v = { plantillaId: p.id, ...pu };
-    await db.insert(s.plantillaPuertas).values(v).onConflictDoUpdate({ target: [s.plantillaPuertas.plantillaId, s.plantillaPuertas.codigo], set: v });
-  }
-  for (const t of TAREAS_PODCAST) {
-    const v = { plantillaId: p.id, ...t };
-    await db.insert(s.plantillaTareas).values(v).onConflictDoUpdate({ target: [s.plantillaTareas.plantillaId, s.plantillaTareas.codigo], set: v });
-  }
+  await db.insert(s.areas).values([...AREAS]).onConflictDoUpdate({ target: s.areas.id, set: nuevos(s.areas, []) });
+  await db.insert(s.departamentos).values([...DEPARTAMENTOS]).onConflictDoUpdate({ target: s.departamentos.codigo, set: nuevos(s.departamentos, ["codigo"]) });
+  await db.insert(s.roles).values(ROLES.map((r, i) => ({ ...r, responsable: !!r.responsable, orden: i + 1 })))
+    .onConflictDoUpdate({ target: s.roles.codigo, set: nuevos(s.roles, ["codigo"]) });
+  await db.insert(s.formatos).values(FORMATOS).onConflictDoUpdate({ target: s.formatos.id, set: nuevos(s.formatos, []) });
+  await db.insert(s.plantillas).values(p).onConflictDoUpdate({ target: s.plantillas.id, set: nuevos(s.plantillas, []) });
+  await db.insert(s.plantillaFases).values(FASES.map((f) => ({ plantillaId: p.id, ...f })))
+    .onConflictDoUpdate({ target: [s.plantillaFases.plantillaId, s.plantillaFases.codigo], set: nuevos(s.plantillaFases, ["plantillaId", "codigo"]) });
+  await db.insert(s.plantillaEstados).values(ESTADOS.map((e, i) => ({ plantillaId: p.id, ...e, orden: i + 1 })))
+    .onConflictDoUpdate({ target: [s.plantillaEstados.plantillaId, s.plantillaEstados.codigo], set: nuevos(s.plantillaEstados, ["plantillaId", "codigo"]) });
+  await db.insert(s.plantillaPuertas).values(PUERTAS.map((pu) => ({ plantillaId: p.id, ...pu })))
+    .onConflictDoUpdate({ target: [s.plantillaPuertas.plantillaId, s.plantillaPuertas.codigo], set: nuevos(s.plantillaPuertas, ["plantillaId", "codigo"]) });
+  await db.insert(s.plantillaTareas).values(TAREAS_PODCAST.map((t) => ({ plantillaId: p.id, ...t })))
+    .onConflictDoUpdate({ target: [s.plantillaTareas.plantillaId, s.plantillaTareas.codigo], set: nuevos(s.plantillaTareas, ["plantillaId", "codigo"]) });
   console.log(`Catálogo: ${AREAS.length} áreas, ${DEPARTAMENTOS.length} departamentos, ${ROLES.length} roles, ${TAREAS_PODCAST.length} tareas de plantilla.`);
 }
 
@@ -67,10 +67,13 @@ export async function demo() {
     ["Demo Edición", "demo.edicion@quervo.local", ["EA", "EV", "CL"]],
     ["Demo Diseño y Redes", "demo.redes@quervo.local", ["DG", "EG", "RP", "CM", "AN"]],
   ];
-  for (const [nombre, email, roles, admin] of reparto) {
-    const p = await persona(nombre, email, !!admin);
-    for (const rol of roles) await db.insert(s.asignaciones).values({ proyectoId: proyecto.id, rol, personaId: p.id }).onConflictDoNothing();
-  }
+  const emails = reparto.map((r) => r[1]);
+  await db.insert(s.personas).values(reparto.map(([nombre, email, , admin]) => ({ nombre, email, admin: !!admin, icalToken: token() })))
+    .onConflictDoNothing();
+  const ids = new Map((await db.select().from(s.personas).where(inArray(s.personas.email, emails))).map((p) => [p.email, p.id]));
+  await db.insert(s.asignaciones)
+    .values(reparto.flatMap(([, email, roles]) => roles.map((rol) => ({ proyectoId: proyecto.id, rol, personaId: ids.get(email)! }))))
+    .onConflictDoNothing();
 
   const hoy = hoyCDMX();
   const ep = [
@@ -78,35 +81,35 @@ export async function demo() {
     { numero: 2, titulo: "La voz como herramienta", g: 6 },
     { numero: 3, titulo: "Invitado por confirmar", g: 20 },
   ];
-  for (const e of ep) {
-    await crearUnidad({ proyectoId: proyecto.id, temporada: 1, numero: e.numero, titulo: e.titulo, fechaG: sumarDias(hoy, e.g), fechaP: null, invitado: null });
+  const unidades = [];
+  for (const e of ep) { // una por una: cada una es una transacción
+    unidades.push(await crearUnidad({ proyectoId: proyecto.id, temporada: 1, numero: e.numero, titulo: e.titulo, fechaG: sumarDias(hoy, e.g), fechaP: null, invitado: null }));
   }
-  // Avance realista del episodio 1: preproducción y grabación hechas, en edición.
-  const [u1] = await db.select().from(s.unidades).where(eq(s.unidades.codigo, "T01E01"));
-  const ts = await db.select().from(s.tareas).where(eq(s.tareas.unidadId, u1.id));
-  for (const t of ts) {
-    const estado = t.fase === "F1" || t.fase === "F2" || t.codigo === "3.1" || t.codigo === "3.2" || t.codigo === "3.3" ? "done" : t.codigo === "3.4" ? "review" : "todo";
-    await db.update(s.tareas).set({ estado }).where(eq(s.tareas.id, t.id));
-  }
-  for (const pu of await db.select().from(s.puertas).where(eq(s.puertas.unidadId, u1.id))) {
-    if (["P1", "P2", "P3"].includes(pu.codigo)) {
-      await db.update(s.puertas).set({ aprobada: true, aprobadaEn: new Date() }).where(eq(s.puertas.id, pu.id));
-    }
-  }
-  await db.update(s.unidades).set({ estado: "E06" }).where(eq(s.unidades.id, u1.id));
+  const [u1, u2] = unidades;
 
+  const estado = (unidadId: number, codigos: string[] | SQL, valor: string, nota: string | null = null) =>
+    db.update(s.tareas).set({ estado: valor, notaBloqueo: nota })
+      .where(and(eq(s.tareas.unidadId, unidadId), Array.isArray(codigos) ? inArray(s.tareas.codigo, codigos) : codigos));
+  const aprobar = (unidadId: number, codigos: string[]) =>
+    db.update(s.puertas).set({ aprobada: true, aprobadaEn: new Date() }).where(and(eq(s.puertas.unidadId, unidadId), inArray(s.puertas.codigo, codigos)));
+
+  // Episodio 1: preproducción y grabación hechas, en edición con el corte en revisión.
+  await Promise.all([
+    estado(u1.id, inArray(s.tareas.fase, ["F1", "F2"]), "done"),
+    estado(u1.id, ["3.1", "3.2", "3.3"], "done"),
+    estado(u1.id, ["3.4"], "review"),
+    aprobar(u1.id, ["P1", "P2", "P3"]),
+    db.update(s.unidades).set({ estado: "E06" }).where(eq(s.unidades.id, u1.id)),
+  ]);
   // Episodio 2: preproducción a medias, con la autorización bloqueada.
-  const [u2] = await db.select().from(s.unidades).where(eq(s.unidades.codigo, "T01E02"));
-  const t2 = await db.select().from(s.tareas).where(eq(s.tareas.unidadId, u2.id));
-  for (const t of t2) {
-    const estado = ["1.1", "1.2", "1.3"].includes(t.codigo) ? "done" : t.codigo === "1.4" ? "blocked" : t.codigo === "1.5" ? "doing" : t.codigo === "1.6" ? "review" : "todo";
-    await db.update(s.tareas).set({ estado, notaBloqueo: t.codigo === "1.4" ? "Esperando firma del invitado" : null }).where(eq(s.tareas.id, t.id));
-  }
-  const [p1] = (await db.select().from(s.puertas).where(eq(s.puertas.unidadId, u2.id))).filter((x) => x.codigo === "P1");
-  await db.update(s.puertas).set({ aprobada: true, aprobadaEn: new Date() }).where(eq(s.puertas.id, p1.id));
-  await db.update(s.unidades).set({ estado: "E03" }).where(eq(s.unidades.id, u2.id));
-
-  await db.insert(s.eventos).values({ proyectoId: proyecto.id, titulo: "Junta editorial", tipo: "junta", fecha: sumarDias(hoy, 2), hora: "10:00", roles: ["ED", "PE", "PR", "EG"], lugar: "Narvarte" });
+  await Promise.all([
+    estado(u2.id, ["1.1", "1.2", "1.3"], "done"),
+    estado(u2.id, ["1.4"], "blocked", "Esperando firma del invitado"),
+    estado(u2.id, ["1.5"], "doing"),
+    estado(u2.id, ["1.6"], "review"),
+    aprobar(u2.id, ["P1"]),
+    db.update(s.unidades).set({ estado: "E03" }).where(eq(s.unidades.id, u2.id)),
+    db.insert(s.eventos).values({ proyectoId: proyecto.id, titulo: "Junta editorial", tipo: "junta", fecha: sumarDias(hoy, 2), hora: "10:00", roles: ["ED", "PE", "PR", "EG"], lugar: "Narvarte" }),
+  ]);
   console.log("Demostración creada: proyecto 'podcast-demo' con 3 episodios y 7 personas de prueba.");
 }
-

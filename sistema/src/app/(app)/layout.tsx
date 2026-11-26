@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { signOut, modoDemo } from "@/auth";
-import { elegirProyecto } from "@/app/acciones";
+import { cookies } from "next/headers";
+import { elegirProyecto, elegirTema } from "@/app/acciones";
+import { Logo } from "@/components/ui";
 import { proyectoActual, proyectosVisibles, requierePersona } from "@/lib/sesion";
 import { Navegacion, SelectorProyecto } from "@/components/navegacion";
 
@@ -10,6 +12,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const ctx = await requierePersona();
   const visibles = await proyectosVisibles();
   const actual = await proyectoActual();
+  const tema = (await cookies()).get("tema")?.value ?? "auto";
 
   const enlaces = [
     { href: "/", texto: "Panel" },
@@ -26,10 +29,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="cab">
         <div className="envoltura">
           <Link href="/" className="logo" aria-label="Inicio">
-            <img src="/marca/quervo-studios_horizontal_negativo_chica.svg" alt="QUERVO Studios" width={150} height={17} />
+            <Logo version="horizontal" ancho={150} alto={17} />
           </Link>
           <Navegacion enlaces={enlaces} />
           <SelectorProyecto accion={elegirProyecto} opciones={visibles.map((p) => ({ slug: p.slug, nombre: p.nombre }))} actual={actual?.slug ?? "todos"} />
+          <form action={elegirTema} className="tema" aria-label="Tema">
+            {[["dia", "Día"], ["noche", "Noche"], ["auto", "Auto"]].map(([v, t]) => (
+              <button key={v} type="submit" name="tema" value={v} aria-pressed={tema === v} title={v === "auto" ? "Según tu dispositivo" : `Tema de ${t.toLowerCase()}`}>{t}</button>
+            ))}
+          </form>
           <div className="yo">
             <span>{ctx.nombre}</span>
             <form action={async () => { "use server"; await signOut({ redirectTo: "/entrar" }); }}>
@@ -42,7 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <footer className="pie">
         <div className="envoltura">
           <span className="etq">Sistema de producción · v0.1</span>
-          <img src="/marca/quervo-studios_apilado_negativo.svg" alt="QUERVO Studios" width={120} height={31} />
+          <Logo version="apilado" ancho={120} alto={31} />
         </div>
       </footer>
     </>

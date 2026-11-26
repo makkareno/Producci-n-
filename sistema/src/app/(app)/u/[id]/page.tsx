@@ -5,7 +5,7 @@ import { db, schema } from "@/db";
 import { requierePersona } from "@/lib/sesion";
 import { tareasVisibles, estadosPlantilla, puertasDe } from "@/lib/consultas";
 import { dirigeProyecto, puedeAprobarPuerta, veProyecto } from "@/lib/acceso";
-import { requisitosPendientes } from "@/lib/produccion";
+import { faltantes, tareasHechas } from "@/lib/produccion";
 import { fechaCorta } from "@/lib/fechas";
 import { FASES } from "@/lib/catalogo";
 import { aprobarPuerta, avanzarEstado, guardarFechas } from "@/app/acciones";
@@ -21,16 +21,18 @@ export default async function Unidad({ params }: { params: Promise<{ id: string 
   const { u, p } = fila;
   const dirige = dirigeProyecto(ctx, p.id);
 
-  const [estados, puertas, todas] = await Promise.all([estadosPlantilla(p.plantillaId), puertasDe([u.id]), tareasVisibles(ctx, [p.id])]);
-  const tareas = todas.filter((t) => t.unidadId === u.id);
+  const [estados, puertas, todas, hechasPorUnidad, equipo] = await Promise.all([
+    estadosPlantilla(p.plantillaId), puertasDe([u.id]), tareasVisibles(ctx, [p.id], { unidadId: u.id }), tareasHechas([u.id]),
+    db.select({ rol: schema.asignaciones.rol, nombre: schema.personas.nombre }).from(schema.asignaciones)
+      .innerJoin(schema.personas, eq(schema.asignaciones.personaId, schema.personas.id))
+      .where(eq(schema.asignaciones.proyectoId, p.id)).orderBy(asc(schema.asignaciones.rol)),
+  ]);
+  const tareas = todas;
   const iActual = estados.findIndex((e) => e.codigo === u.estado);
   const siguiente = estados[iActual + 1];
   const faltan = new Map<string, string[]>();
-  for (const pu of puertas) faltan.set(pu.codigo, pu.aprobada ? [] : await requisitosPendientes(u.id, pu.requisitos));
+  for (const pu of puertas) faltan.set(pu.codigo, pu.aprobada ? [] : faltantes(pu.requisitos, hechasPorUnidad.get(u.id)));
   const hechas = tareas.filter((t) => t.estado === "done").length;
-  const equipo = await db.select({ rol: schema.asignaciones.rol, nombre: schema.personas.nombre }).from(schema.asignaciones)
-    .innerJoin(schema.personas, eq(schema.asignaciones.personaId, schema.personas.id))
-    .where(eq(schema.asignaciones.proyectoId, p.id)).orderBy(asc(schema.asignaciones.rol));
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { fechaLimite, sumarDias } from "./fechas";
 
@@ -71,16 +71,28 @@ export async function crearUnidad(datos: NuevaUnidad) {
   });
 }
 
-/** Cambia las fechas de grabación y publicación y recalcula las fechas límite de todas las tareas. */
+/** Cambia las fechas de grabación y publicación y recalcula las fechas límite de todas las tareas (una sola sentencia). */
 export async function cambiarFechas(unidadId: number, fechaG: string | null, fechaP: string | null) {
   await db.transaction(async (tx) => {
     await tx.update(unidades).set({ fechaG, fechaP }).where(eq(unidades.id, unidadId));
-    const lista = await tx.select({ id: tareas.id, referencia: tareas.referencia, desfase: tareas.desfase })
-      .from(tareas).where(eq(tareas.unidadId, unidadId));
-    for (const t of lista) {
-      await tx.update(tareas).set({ fechaLimite: fechaLimite(t.referencia, t.desfase, fechaG, fechaP) }).where(eq(tareas.id, t.id));
-    }
+    await tx.update(tareas).set({
+      fechaLimite: sql`(case when ${tareas.referencia} = 'P' then ${fechaP}::date else ${fechaG}::date end) + ${tareas.desfase}`,
+    }).where(eq(tareas.unidadId, unidadId));
   });
+}
+
+/** Códigos de tareas hechas por unidad, en una sola consulta. */
+export async function tareasHechas(unidadIds: number[]): Promise<Map<number, Set<string>>> {
+  const m = new Map<number, Set<string>>();
+  if (!unidadIds.length) return m;
+  const filas = await db.select({ unidadId: tareas.unidadId, codigo: tareas.codigo }).from(tareas)
+    .where(and(inArray(tareas.unidadId, unidadIds), eq(tareas.estado, "done")));
+  for (const f of filas) { if (!m.has(f.unidadId)) m.set(f.unidadId, new Set()); m.get(f.unidadId)!.add(f.codigo); }
+  return m;
+}
+
+export function faltantes(requisitos: string[], hechas: Set<string> | undefined): string[] {
+  return requisitos.filter((r) => !hechas?.has(r));
 }
 
 /** Requisitos de una puerta que aún no están hechos. */

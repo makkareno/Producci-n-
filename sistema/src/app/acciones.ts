@@ -39,6 +39,16 @@ export async function elegirProyecto(formData: FormData) {
   revalidatePath("/", "layout");
 }
 
+/* ───────── Tema de día / noche ───────── */
+
+export async function elegirTema(formData: FormData) {
+  const tema = texto(formData, "tema");
+  const c = await cookies();
+  if (tema === "dia" || tema === "noche") c.set("tema", tema, { sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 60 * 60 * 24 * 365 });
+  else c.delete("tema");
+  revalidatePath("/", "layout");
+}
+
 /* ───────── Tareas ───────── */
 
 export async function cambiarEstadoTarea(formData: FormData) {

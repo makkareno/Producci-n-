@@ -1,11 +1,22 @@
-import { AREAS, ESTADOS_TAREA, ROLES, type EstadoTarea } from "@/lib/catalogo";
+import { ESTADOS_TAREA, ROLES, type EstadoTarea } from "@/lib/catalogo";
 import { AREA_DE_ROL } from "@/lib/acceso";
 
-const COLOR_AREA = new Map<string, string>(AREAS.map((a) => [a.id, a.color]));
 const NOMBRE_ROL = new Map(ROLES.map((r) => [r.codigo, r.nombre]));
 
+/** Color de trabajo del área del rol, como variable CSS: cambia sola entre tema de día y de noche. */
 export function colorDeRol(codigo: string) {
-  return COLOR_AREA.get(AREA_DE_ROL.get(codigo) ?? "") ?? "#a4aebd";
+  return `var(--a-${AREA_DE_ROL.get(codigo) ?? "adm"})`;
+}
+
+/** Firma de QUERVO Studios: blanca en noche, negra en día. Nunca en color. */
+export function Logo({ version, ancho, alto }: { version: "horizontal" | "apilado"; ancho: number; alto: number }) {
+  const archivo = version === "horizontal" ? "quervo-studios_horizontal_%_chica.svg" : "quervo-studios_apilado_%.svg";
+  return (
+    <>
+      <img className="solo-noche" src={`/marca/${archivo.replace("%", "negativo")}`} alt="QUERVO Studios" width={ancho} height={alto} style={{ width: ancho, height: "auto" }} />
+      <img className="solo-dia" src={`/marca/${archivo.replace("%", "positivo")}`} alt="" aria-hidden="true" width={ancho} height={alto} style={{ width: ancho, height: "auto" }} />
+    </>
+  );
 }
 
 /** Chip de rol: relleno = lo hace; contorno = lo aprueba. */

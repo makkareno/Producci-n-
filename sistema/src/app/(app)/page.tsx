@@ -14,10 +14,8 @@ export default async function Panel() {
   const proyectos = await proyectosEnFoco();
   const ids = proyectos.map((p) => p.id);
   const hoy = hoyCDMX();
-  const [tareas, unidades] = await Promise.all([tareasVisibles(ctx, ids), unidadesDe(ids)]);
+  const [tareas, unidades, estados, cubiertos] = await Promise.all([tareasVisibles(ctx, ids), unidadesDe(ids), estadosPlantilla("podcast-v1"), rolesCubiertos(ids)]);
   const puertas = await puertasDe(unidades.map((u) => u.id));
-  const estados = await estadosPlantilla("podcast-v1");
-  const cubiertos = await rolesCubiertos(ids);
 
   const abiertas = tareas.filter((t) => t.estado !== "done");
   const vencidas = abiertas.filter((t) => t.fechaLimite && t.fechaLimite < hoy);

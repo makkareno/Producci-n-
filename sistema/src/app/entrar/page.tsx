@@ -3,6 +3,7 @@ import { asc, eq } from "drizzle-orm";
 import { auth, signIn, loginDePrueba, modoDemo } from "@/auth";
 import { db, schema } from "@/db";
 import { baseLista } from "@/db/lista";
+import { Logo } from "@/components/ui";
 
 export const metadata = { title: "Entrar" };
 
@@ -25,7 +26,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
   return (
     <main className="entrar">
       <div className="tarjeta">
-        <img src="/marca/quervo-studios_apilado_negativo.svg" alt="QUERVO Studios" width={220} height={57} />
+        <div><Logo version="apilado" ancho={220} alto={57} /></div>
         <div style={{ display: "grid", gap: 8 }}>
           <span className="etq etq-raya">Sistema de producción</span>
           <h1 style={{ fontSize: "2.45rem" }}>{modoDemo ? "Demostración del sistema." : "Entra con tu cuenta de Google."}</h1>
