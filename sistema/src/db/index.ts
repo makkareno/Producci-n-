@@ -1,17 +1,32 @@
-import { drizzle } from "drizzle-orm/node-postgres";
+/*
+ * Conexión a la base de datos.
+ *  - Con DATABASE_URL (postgres://…): Postgres real (local o Neon en producción).
+ *  - Sin DATABASE_URL: PGlite, un Postgres incluido en la app que guarda los datos en ./.datos
+ *    (solo para probar en una computadora sin instalar nada).
+ */
+import { drizzle as drizzlePg, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { drizzle as drizzleLite } from "drizzle-orm/pglite";
+import { PGlite } from "@electric-sql/pglite";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
-const globalForDb = globalThis as unknown as { pool?: Pool };
+export const usaPglite = !process.env.DATABASE_URL?.startsWith("postgres");
+export const carpetaPglite = process.env.PGLITE_DIR ?? ".datos/pglite";
 
-const pool =
-  globalForDb.pool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-    max: 5,
-    ssl: process.env.DATABASE_URL?.includes("localhost") ? undefined : { rejectUnauthorized: true },
-  });
-if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;
+type Db = NodePgDatabase<typeof schema>;
+const g = globalThis as unknown as { __db?: Db; __lite?: PGlite };
 
-export const db = drizzle(pool, { schema });
+function crear(): Db {
+  if (usaPglite) {
+    if (process.env.VERCEL) throw new Error("Falta DATABASE_URL en Vercel.");
+    g.__lite ??= new PGlite(carpetaPglite);
+    return drizzleLite(g.__lite, { schema }) as unknown as Db;
+  }
+  const url = process.env.DATABASE_URL!;
+  const pool = new Pool({ connectionString: url, max: 5, ssl: /localhost|127\.0\.0\.1/.test(url) ? undefined : { rejectUnauthorized: true } });
+  return drizzlePg(pool, { schema });
+}
+
+export const db: Db = g.__db ?? crear();
+if (process.env.NODE_ENV !== "production") g.__db = db;
 export { schema };

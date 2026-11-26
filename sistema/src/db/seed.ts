@@ -1,6 +1,7 @@
 /*
  * Carga el catálogo base (idempotente). Uso:
  *   npm run db:seed                → catálogo + equipo (si existe equipo.local.json)
+ *   npm run local                  → en una computadora: tablas + catálogo + demostración + servidor
  *   npm run db:seed -- --demo      → además, un proyecto de demostración con datos de ejemplo
  *
  * equipo.local.json (no se versiona): [{ "nombre": "...", "email": "...", "admin": true }]
@@ -66,14 +67,15 @@ async function equipo() {
 
 /* Proyecto de demostración con personas ficticias, para probar el sistema. */
 async function demo() {
-  const [cliente] = await db.insert(s.clientes).values({ nombre: "QUERVO Studios", interno: true }).returning();
+  let [cliente] = await db.select().from(s.clientes).where(eq(s.clientes.nombre, "QUERVO Studios"));
+  if (!cliente) [cliente] = await db.insert(s.clientes).values({ nombre: "QUERVO Studios", interno: true }).returning();
   const [proyecto] = await db.insert(s.proyectos).values({
     slug: "podcast-demo", nombre: "Podcast de demostración", clienteId: cliente.id, formatoId: "podcast", plantillaId: "podcast-v1", abreviatura: "DEM",
   }).onConflictDoNothing().returning();
   if (!proyecto) { console.log("La demostración ya existe."); return; }
 
-  const reparto: [string, string, string[]][] = [
-    ["Demo Dirección", "demo.direccion@quervo.local", ["PE"]],
+  const reparto: [string, string, string[], boolean?][] = [
+    ["Demo Dirección", "demo.direccion@quervo.local", ["PE"], true], // admin, para probar Configuración
     ["Demo Producción", "demo.produccion@quervo.local", ["PR", "BK", "AP"]],
     ["Demo Contenido", "demo.contenido@quervo.local", ["ED", "IN"]],
     ["Demo Host", "demo.host@quervo.local", ["HO"]],
@@ -81,8 +83,8 @@ async function demo() {
     ["Demo Edición", "demo.edicion@quervo.local", ["EA", "EV", "CL"]],
     ["Demo Diseño y Redes", "demo.redes@quervo.local", ["DG", "EG", "RP", "CM", "AN"]],
   ];
-  for (const [nombre, email, roles] of reparto) {
-    const p = await persona(nombre, email);
+  for (const [nombre, email, roles, admin] of reparto) {
+    const p = await persona(nombre, email, !!admin);
     for (const rol of roles) await db.insert(s.asignaciones).values({ proyectoId: proyecto.id, rol, personaId: p.id }).onConflictDoNothing();
   }
 

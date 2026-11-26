@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "local": "tsx src/db/migrar.ts && tsx src/db/seed.ts --demo && next dev",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "db:push": "drizzle-kit push",
+    "db:migrar": "tsx src/db/migrar.ts",
+    "db:generar": "drizzle-kit generate",
     "db:seed": "tsx src/db/seed.ts",
     "test": "tsx --test src/lib/reglas.test.ts"
   },
   "dependencies": {
+    "@electric-sql/pglite": "0.5.16",
     "drizzle-orm": "0.45.4",
     "next": "15.5.29",
     "next-auth": "5.0.0-beta.32",

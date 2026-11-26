@@ -11,6 +11,29 @@ tareas por rol, puertas de aprobación y calendario. Diseño y reglas en `../doc
 - Pantallas: Panel general, Mis pendientes, Mi área, ficha de episodio, Calendario y suscripción iCal.
 - Configuración solo para administración.
 
+## Probar en tu Mac (sin instalar base de datos)
+
+1. Instala **Node.js 22 LTS** desde [nodejs.org](https://nodejs.org) (instalador para macOS). Solo la primera vez.
+2. Descarga el código, rama `claude/eloquent-meitner-vq2v1p`:
+   - Con Terminal: `git clone -b claude/eloquent-meitner-vq2v1p https://github.com/makkareno/Producci-n-.git`
+   - O en GitHub: elige esa rama › **Code** › **Download ZIP**, y descomprime.
+3. En Terminal, dentro de la carpeta descargada:
+   ```bash
+   cd Producci-n-/sistema
+   npm install
+   npm run local
+   ```
+4. Abre **http://localhost:3000**. En "Solo en desarrollo · entrar como" elige a quién quieres ser:
+   - **Demo Producción:** dirige el proyecto.
+   - **Demo Edición:** solo ve su área.
+   - **Demo Dirección:** es admin y ve Configuración.
+   - Y el resto de personas de prueba.
+
+Detalles:
+- Para detenerlo: `Ctrl + C` en Terminal. Para volver a abrirlo: `npm run local` otra vez. Los datos se conservan en la carpeta `.datos/`.
+- Para empezar de cero, borra la carpeta `.datos/` y el archivo `.env.local`.
+- La base local es PGlite: un Postgres que viene dentro de la aplicación. En producción se usa Postgres (Neon).
+
 ## Cómo está hecho
 
 - Next.js 15 (App Router) y TypeScript. Los datos se leen y las acciones se ejecutan en el servidor.
