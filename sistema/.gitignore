@@ -1,0 +1,8 @@
+node_modules/
+.next/
+.env
+.env.local
+*.tsbuildinfo
+next-env.d.ts
+# Datos del equipo (nombres y correos): se cargan desde Configuración, no se versionan
+equipo.local.json
