@@ -9,7 +9,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "db:migrar": "tsx src/db/migrar.ts",
-    "db:generar": "drizzle-kit generate",
+    "db:generar": "drizzle-kit generate && tsx src/db/exportar-sql.ts",
     "db:seed": "tsx src/db/seed.ts",
     "test": "tsx --test src/lib/reglas.test.ts"
   },

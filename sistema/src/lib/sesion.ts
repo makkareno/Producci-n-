@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { auth } from "@/auth";
 import { db, schema } from "@/db";
+import { baseLista } from "@/db/lista";
 import type { Contexto } from "./acceso";
 
 /** Persona que inició sesión, con sus roles por proyecto. Redirige a /entrar si no hay sesión válida. */
 export const requierePersona = cache(async (): Promise<Contexto> => {
+  await baseLista();
   const sesion = await auth();
   const personaId = (sesion as unknown as { personaId?: number } | null)?.personaId;
   if (!personaId) redirect("/entrar");

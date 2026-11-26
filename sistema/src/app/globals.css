@@ -27,6 +27,9 @@ p { margin: 0; }
 .tenue { color: var(--dim); }
 .envoltura { max-width: 1240px; margin: 0 auto; padding-left: var(--margen); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
+/* Aviso de demostración */
+.aviso-demo { text-align: center; font-size: .7rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; padding: 6px 16px; background: var(--ink); color: var(--bg); }
+
 /* Encabezado */
 .cab { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
 .cab .envoltura { display: flex; align-items: center; gap: 18px; padding-block: 12px; flex-wrap: wrap; }

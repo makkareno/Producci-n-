@@ -3,11 +3,15 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
+import { modoDemo } from "@/db/index";
+import { baseLista } from "@/db/lista";
 
-/** Entrada sin Google para probar en local. Nunca se activa en producción. */
-export const loginDePrueba = process.env.DEV_LOGIN === "1" && process.env.NODE_ENV !== "production" && process.env.VERCEL_ENV !== "production";
+/** Entrada sin Google: en desarrollo local, o en la demostración (que solo tiene datos de prueba en memoria). */
+export const loginDePrueba = modoDemo || (process.env.DEV_LOGIN === "1" && process.env.NODE_ENV !== "production" && process.env.VERCEL_ENV !== "production");
+export { modoDemo };
 
 async function personaPorEmail(email: string) {
+  await baseLista();
   const [p] = await db.select().from(schema.personas)
     .where(and(eq(schema.personas.email, email.toLowerCase()), eq(schema.personas.activo, true)));
   return p;
@@ -18,7 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 30 },
   pages: { signIn: "/entrar", error: "/entrar" },
   providers: [
-    Google({ authorization: { params: { prompt: "select_account" } } }),
+    ...(modoDemo ? [] : [Google({ authorization: { params: { prompt: "select_account" } } })]),
     ...(loginDePrueba
       ? [Credentials({
           id: "prueba",

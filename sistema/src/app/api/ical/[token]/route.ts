@@ -1,5 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
+import { baseLista } from "@/db/lista";
 import { agenda } from "@/lib/agenda";
 import { hoyCDMX, sumarDias } from "@/lib/fechas";
 import type { Contexto } from "@/lib/acceso";
@@ -12,6 +13,7 @@ function escapar(t: string) {
 
 /** Calendario personal en formato iCalendar, para suscribirse desde Google Calendar. */
 export async function GET(_req: Request, { params }: { params: Promise<{ token: string }> }) {
+  await baseLista();
   const token = (await params).token.replace(/\.ics$/, "");
   const [p] = await db.select().from(schema.personas).where(and(eq(schema.personas.icalToken, token), eq(schema.personas.activo, true)));
   if (!p) return new Response("No encontrado", { status: 404 });

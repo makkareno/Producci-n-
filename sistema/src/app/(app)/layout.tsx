@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { signOut } from "@/auth";
+import { signOut, modoDemo } from "@/auth";
 import { elegirProyecto } from "@/app/acciones";
 import { proyectoActual, proyectosVisibles, requierePersona } from "@/lib/sesion";
 import { Navegacion, SelectorProyecto } from "@/components/navegacion";
@@ -22,6 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <>
+      {modoDemo ? <div className="aviso-demo">Demostración · datos de prueba · los cambios pueden reiniciarse</div> : null}
       <header className="cab">
         <div className="envoltura">
           <Link href="/" className="logo" aria-label="Inicio">
