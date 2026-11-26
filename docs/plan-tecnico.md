@@ -93,7 +93,27 @@ La etapa 1 se construye y prueba con un **episodio piloto real** antes de seguir
 
 Precios por verificar en las páginas oficiales antes de contratar.
 
-## 6. Decisiones abiertas
+## 6. Portabilidad: moverlo a una cuenta propia de QUERVO
+
+El sistema se construye para poder **mudarse de equipo de Vercel** sin rehacer nada.
+
+**Reglas de construcción**
+- Toda la configuración va en variables de entorno: conexión a la base, credenciales de Google y correo. No hay identificadores de equipo escritos en el código.
+- La base de datos es Postgres estándar, así que se puede exportar e importar completa con `pg_dump` y `pg_restore`.
+- La dirección pública debería ser un dominio de QUERVO desde el inicio, por ejemplo `produccion.quervo.mx`, para que no cambie con la mudanza.
+
+**Pasos de la mudanza**
+1. Crear el equipo de QUERVO en Vercel, con el plan Pro.
+2. Transferir el proyecto. Vercel lo permite entre equipos: Configuración del proyecto › Transferir. Se lleva los despliegues y la configuración.
+3. **Base de datos:** la que se crea desde el Marketplace queda ligada al equipo original. Lo seguro es crear una nueva en el equipo de QUERVO, copiar los datos y cambiar la variable de conexión.
+4. **Dominio:** se mueve aparte, con `vercel domains move` o desde el panel. Los registros DNS se conservan.
+5. **Inicio de sesión con Google:** si cambia la dirección, hay que actualizar las URL autorizadas en Google Cloud.
+6. **Código:** el repositorio está en la cuenta personal de GitHub (`makkareno`). Se puede transferir a una organización de QUERVO en GitHub.
+
+**Alternativa sin mudanza:** crear desde ahora el equipo de QUERVO en Vercel y construir ahí directamente.
+Como una herramienta de la empresa necesita el plan Pro de todos modos, es la opción más limpia si la cuenta se puede abrir ya.
+
+## 7. Decisiones abiertas
 
 1. ¿El sistema maneja **todos los podcasts** que produce QUERVO Studios (varios clientes) o solo uno? Recomendado: todos.
 2. ¿Todo el equipo, incluidos los freelancers, tiene **cuenta de Google** para iniciar sesión?
